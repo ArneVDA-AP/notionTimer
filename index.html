@@ -12,6 +12,9 @@
             font-family: 'Inter', sans-serif;
             /* Default text color from the palette */
             color: #E0E1DD;
+            /* Ensure body takes full height and no overflow */
+            height: 100vh;
+            overflow: hidden;
         }
         .font-roboto-mono {
             font-family: 'Roboto Mono', monospace;
@@ -24,29 +27,25 @@
         }
     </style>
 </head>
-<body class="bg-[#0D1B2A] flex flex-col items-center justify-center min-h-screen p-4 antialiased">
+<body class="bg-[#0D1B2A] flex flex-col items-center justify-center p-4 antialiased">
 
-    <div class="bg-[#1B263B] p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-md">
-        <h1 class="text-2xl sm:text-3xl font-bold text-center text-[#E0E1DD] mb-6">Timer</h1>
-        <div id="timeDisplay" class="text-5xl sm:text-6xl font-roboto-mono mb-8 text-center text-[#E0E1DD] py-4 bg-[#415A77]/30 rounded-lg">
+    <div class="bg-[#1B263B] p-6 sm:p-10 rounded-xl shadow-2xl w-full max-w-2xl">
+        <div id="timeDisplay" class="text-6xl sm:text-8xl font-roboto-mono mb-10 sm:mb-12 text-center text-[#E0E1DD] py-4 bg-[#415A77]/30 rounded-lg">
             00:00:00
         </div>
 
-        <div class="flex flex-col sm:flex-row justify-around space-y-3 sm:space-y-0 sm:space-x-3">
-            <button id="startButton" class="bg-[#415A77] hover:bg-[#5a768a] active:bg-[#354a60] text-[#E0E1DD] font-semibold py-3 px-4 rounded-lg text-lg w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus">
+        <div class="flex flex-col sm:flex-row justify-around space-y-4 sm:space-y-0 sm:space-x-4">
+            <button id="startButton" class="bg-[#415A77] hover:bg-[#5a768a] active:bg-[#354a60] text-[#E0E1DD] font-semibold py-3 sm:py-4 px-4 rounded-lg text-lg sm:text-xl w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus">
                 Start
             </button>
-            <button id="stopButton" class="bg-[#778DA9] hover:bg-[#93a5bd] active:bg-[#60738a] text-[#0D1B2A] font-semibold py-3 px-4 rounded-lg text-lg w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus" disabled>
+            <button id="stopButton" class="bg-[#778DA9] hover:bg-[#93a5bd] active:bg-[#60738a] text-[#0D1B2A] font-semibold py-3 sm:py-4 px-4 rounded-lg text-lg sm:text-xl w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus" disabled>
                 Stop
             </button>
-            <button id="resetButton" class="bg-transparent hover:bg-[#415A77]/30 active:bg-[#415A77]/50 border-2 border-[#778DA9] text-[#778DA9] hover:text-[#E0E1DD] font-semibold py-3 px-4 rounded-lg text-lg w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus">
+            <button id="resetButton" class="bg-transparent hover:bg-[#415A77]/30 active:bg-[#415A77]/50 border-2 border-[#778DA9] text-[#778DA9] hover:text-[#E0E1DD] font-semibold py-3 sm:py-4 px-4 rounded-lg text-lg sm:text-xl w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus">
                 Reset
             </button>
         </div>
     </div>
-
-    <footer class="mt-8 text-center text-[#778DA9] text-sm">
-    </footer>
 
     <script>
         // DOM Elements
