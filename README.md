@@ -1,0 +1,2 @@
+# notionTimer
+Simple Notion timer
