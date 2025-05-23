@@ -7,22 +7,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Use Inter as the default body font, Roboto Mono for the timer display */
         body {
             font-family: 'Inter', sans-serif;
-            /* Default text color from the palette */
             color: #E0E1DD;
-            /* Ensure body takes full height and no overflow */
             height: 100vh;
             overflow: hidden;
         }
         .font-roboto-mono {
             font-family: 'Roboto Mono', monospace;
         }
-        /* Custom button focus states for better accessibility and visual feedback, using a color from the palette */
         .btn-focus:focus {
             outline: none;
-            /* Using #778DA9 from palette for focus ring: rgba(119, 141, 169, 0.5) */
             box-shadow: 0 0 0 3px rgba(119, 141, 169, 0.5);
         }
     </style>
@@ -55,15 +50,15 @@
         const resetButton = document.getElementById('resetButton');
 
         // Timer State Variables
-        let startTime;            // Timestamp when the timer was started or resumed
+        let startTime;            // Timestamp when the timer was started or resumed (current running segment)
         let tInterval;            // Holds the interval ID for setInterval
-        let savedTime = 0;        // Accumulated time when the timer is paused (in milliseconds)
+        let savedTime = 0;        // Accumulated time from previous PAUSED segments (in milliseconds)
         let running = false;      // Boolean flag to check if the timer is currently running
 
         // localStorage keys
-        const LS_SAVED_TIME = 'timerSavedTime';
-        const LS_START_TIME = 'timerStartTime';
-        const LS_RUNNING = 'timerRunning';
+        const LS_SAVED_TIME = 'timerSavedTime'; // Stores accumulated time from paused segments
+        const LS_START_TIME = 'timerStartTime'; // Stores the timestamp when the current run began
+        const LS_RUNNING = 'timerRunning';      // Stores 'true' or 'false' if timer is running
 
         /**
          * Load timer state from localStorage when the page loads.
@@ -78,27 +73,25 @@
             }
 
             if (storedRunning === 'true' && storedStartTime !== null) {
-                // Timer was running when the page was closed/reloaded
-                startTime = parseInt(storedStartTime, 10);
+                // Timer was running when the page was closed/reloaded.
+                startTime = parseInt(storedStartTime, 10); // Restore the original start time of that run.
                 running = true;
 
-                // The time elapsed while the page was closed will be accounted for
-                // by updateDisplay using the loaded startTime and savedTime.
+                // The time elapsed while the page was closed is automatically accounted for
+                // in updateDisplay because `startTime` is from the past and `new Date().getTime()` in updateDisplay is current.
+                // `difference = (new Date().getTime() - startTime) + savedTime` will correctly calculate total time.
                 
                 tInterval = setInterval(updateDisplay, 1000); // Restart the interval
                 startButton.disabled = true;
                 stopButton.disabled = false;
                 resetButton.disabled = false;
             } else {
-                // Timer was not running (paused or reset) or no stored state
-                running = false; // Ensure running is false if not explicitly true from storage
+                // Timer was not running (paused or reset) or no stored state.
+                running = false; 
                 startButton.disabled = false;
                 stopButton.disabled = true;
-                // resetButton state is fine as is (enabled by default).
             }
-
-            // Update the display with the loaded state
-            updateDisplay();
+            updateDisplay(); // Update the display with the loaded state.
         });
 
         /**
@@ -106,17 +99,17 @@
          */
         function startTimer() {
             if (!running) {
-                startTime = new Date().getTime(); // Get current time as the starting point for this segment
+                startTime = new Date().getTime(); // Get current time as the starting point for this segment.
+                                                  // `savedTime` already holds time from previous paused segments.
                 
                 // Save state to localStorage
                 localStorage.setItem(LS_START_TIME, startTime);
-                localStorage.setItem(LS_SAVED_TIME, savedTime); // Save the time accumulated *before* this run
+                localStorage.setItem(LS_SAVED_TIME, savedTime); // Persist `savedTime` accumulated *before* this run.
                 localStorage.setItem(LS_RUNNING, 'true');
 
                 tInterval = setInterval(updateDisplay, 1000); 
                 running = true;
 
-                // Update button states
                 startButton.disabled = true;
                 stopButton.disabled = false;
                 resetButton.disabled = false; 
@@ -128,20 +121,19 @@
          */
         function stopTimer() {
             if (running) {
-                clearInterval(tInterval); // Stop the interval
-                // Update savedTime with the duration of the segment that just ended
+                clearInterval(tInterval); 
+                // Add the duration of the segment that just ended to savedTime.
                 savedTime += (new Date().getTime() - startTime);
-                running = false; // Set running to false before updating display
+                running = false; 
 
                 // Save state to localStorage
-                localStorage.setItem(LS_SAVED_TIME, savedTime);
+                localStorage.setItem(LS_SAVED_TIME, savedTime); // `savedTime` now includes the segment just ended.
                 localStorage.setItem(LS_RUNNING, 'false');
-                localStorage.removeItem(LS_START_TIME); // Clean up startTime as it's not needed when paused
+                localStorage.removeItem(LS_START_TIME); // Clean up LS_START_TIME as it's not needed when paused.
 
-                // Update button states
                 startButton.disabled = false;
                 stopButton.disabled = true;
-                updateDisplay(); // Explicitly update display to show the final paused time
+                updateDisplay(); // Explicitly update display to show the final paused time.
             }
         }
 
@@ -160,10 +152,8 @@
             localStorage.removeItem(LS_START_TIME);
             localStorage.removeItem(LS_RUNNING);
 
-            // Update button states
             startButton.disabled = false;
             stopButton.disabled = true; 
-            // resetButton remains enabled
         }
 
         /**
@@ -174,10 +164,10 @@
             let difference;
 
             if (running) {
-                // If running, calculate current elapsed time based on startTime and savedTime
+                // If running, current elapsed time is duration of current segment + time from previous paused segments.
                 difference = (new Date().getTime() - startTime) + savedTime;
             } else {
-                // If not running (paused or reset), display the savedTime
+                // If not running (paused or reset), display the total accumulated savedTime.
                 difference = savedTime;
             }
 
