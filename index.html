@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Timer for Notion</title>
+    <title>Dual Timer for Notion</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -20,155 +20,258 @@
             outline: none;
             box-shadow: 0 0 0 3px rgba(119, 141, 169, 0.5);
         }
+        /* Active tab style */
+        .tab-button.active {
+            border-color: #E0E1DD; /* Or another contrasting color from your palette */
+            font-weight: 600; /* semibold */
+        }
     </style>
 </head>
 <body class="bg-[#191919] flex flex-col items-center justify-center p-4 antialiased">
 
     <div class="bg-[#1B263B] p-6 sm:p-10 rounded-xl shadow-2xl w-full max-w-2xl">
-        <div id="timeDisplay" class="text-6xl sm:text-8xl font-roboto-mono mb-10 sm:mb-12 text-center text-[#E0E1DD] py-4 bg-[#415A77]/30 rounded-lg">
-            00:00:00
+        <!-- Tabs -->
+        <div class="mb-6 flex border-b border-[#415A77]">
+            <button id="workTabButton" data-tab="work" class="tab-button py-3 px-6 text-lg text-[#E0E1DD] border-b-2 border-transparent hover:border-[#778DA9] focus:outline-none transition-colors duration-150">Work</button>
+            <button id="breakTabButton" data-tab="break" class="tab-button py-3 px-6 text-lg text-[#E0E1DD] border-b-2 border-transparent hover:border-[#778DA9] focus:outline-none transition-colors duration-150">Break</button>
         </div>
 
-        <div class="flex flex-col sm:flex-row justify-around space-y-4 sm:space-y-0 sm:space-x-4">
-            <button id="startButton" class="bg-[#415A77] hover:bg-[#5a768a] active:bg-[#354a60] text-[#E0E1DD] font-semibold py-3 sm:py-4 px-4 rounded-lg text-lg sm:text-xl w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus">
-                Start
-            </button>
-            <button id="stopButton" class="bg-[#778DA9] hover:bg-[#93a5bd] active:bg-[#60738a] text-[#0D1B2A] font-semibold py-3 sm:py-4 px-4 rounded-lg text-lg sm:text-xl w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus" disabled>
-                Stop
-            </button>
-            <button id="resetButton" class="bg-transparent hover:bg-[#415A77]/30 active:bg-[#415A77]/50 border-2 border-[#778DA9] text-[#778DA9] hover:text-[#E0E1DD] font-semibold py-3 sm:py-4 px-4 rounded-lg text-lg sm:text-xl w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus">
-                Reset
-            </button>
+        <!-- Timer Content Panes -->
+        <div id="workTimerContent" class="timer-content">
+            <div id="workTimeDisplay" class="text-6xl sm:text-8xl font-roboto-mono mb-10 sm:mb-12 text-center text-[#E0E1DD] py-4 bg-[#415A77]/30 rounded-lg">
+                00:00:00
+            </div>
+            <div class="flex flex-col sm:flex-row justify-around space-y-4 sm:space-y-0 sm:space-x-4">
+                <button id="workStartButton" class="bg-[#415A77] hover:bg-[#5a768a] active:bg-[#354a60] text-[#E0E1DD] font-semibold py-3 sm:py-4 px-4 rounded-lg text-lg sm:text-xl w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus">
+                    Start
+                </button>
+                <button id="workStopButton" class="bg-[#778DA9] hover:bg-[#93a5bd] active:bg-[#60738a] text-[#0D1B2A] font-semibold py-3 sm:py-4 px-4 rounded-lg text-lg sm:text-xl w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus" disabled>
+                    Stop
+                </button>
+                <button id="workResetButton" class="bg-transparent hover:bg-[#415A77]/30 active:bg-[#415A77]/50 border-2 border-[#778DA9] text-[#778DA9] hover:text-[#E0E1DD] font-semibold py-3 sm:py-4 px-4 rounded-lg text-lg sm:text-xl w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus">
+                    Reset
+                </button>
+            </div>
+        </div>
+
+        <div id="breakTimerContent" class="timer-content" style="display: none;">
+            <div id="breakTimeDisplay" class="text-6xl sm:text-8xl font-roboto-mono mb-10 sm:mb-12 text-center text-[#E0E1DD] py-4 bg-[#415A77]/30 rounded-lg">
+                00:00:00
+            </div>
+            <div class="flex flex-col sm:flex-row justify-around space-y-4 sm:space-y-0 sm:space-x-4">
+                <button id="breakStartButton" class="bg-[#415A77] hover:bg-[#5a768a] active:bg-[#354a60] text-[#E0E1DD] font-semibold py-3 sm:py-4 px-4 rounded-lg text-lg sm:text-xl w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus">
+                    Start
+                </button>
+                <button id="breakStopButton" class="bg-[#778DA9] hover:bg-[#93a5bd] active:bg-[#60738a] text-[#0D1B2A] font-semibold py-3 sm:py-4 px-4 rounded-lg text-lg sm:text-xl w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus" disabled>
+                    Stop
+                </button>
+                <button id="breakResetButton" class="bg-transparent hover:bg-[#415A77]/30 active:bg-[#415A77]/50 border-2 border-[#778DA9] text-[#778DA9] hover:text-[#E0E1DD] font-semibold py-3 sm:py-4 px-4 rounded-lg text-lg sm:text-xl w-full sm:w-1/3 transition duration-150 ease-in-out btn-focus">
+                    Reset
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        // DOM Elements
-        const timeDisplay = document.getElementById('timeDisplay');
-        const startButton = document.getElementById('startButton');
-        const stopButton = document.getElementById('stopButton');
-        const resetButton = document.getElementById('resetButton');
-
-        // Timer State Variables
-        let startTime;            // Timestamp when the timer was started or resumed (current running segment)
-        let tInterval;            // Holds the interval ID for setInterval
-        let savedTime = 0;        // Accumulated time from previous PAUSED segments (in milliseconds)
-        let running = false;      // Boolean flag to check if the timer is currently running
-
-        // localStorage keys
-        const LS_SAVED_TIME = 'timerSavedTime'; // Stores accumulated time from paused segments
-        const LS_START_TIME = 'timerStartTime'; // Stores the timestamp when the current run began
-        const LS_RUNNING = 'timerRunning';      // Stores 'true' or 'false' if timer is running
+        // Timer State and DOM Elements Management
+        let timers = {
+            work: {
+                startTime: undefined,
+                tInterval: undefined,
+                savedTime: 0,
+                running: false,
+                displayElement: document.getElementById('workTimeDisplay'),
+                startButtonElement: document.getElementById('workStartButton'),
+                stopButtonElement: document.getElementById('workStopButton'),
+                resetButtonElement: document.getElementById('workResetButton'),
+                contentElement: document.getElementById('workTimerContent'),
+                tabButtonElement: document.getElementById('workTabButton'),
+                lsKeys: {
+                    savedTime: 'workTimerSavedTime',
+                    startTime: 'workTimerStartTime',
+                    running: 'workTimerRunning'
+                }
+            },
+            break: {
+                startTime: undefined,
+                tInterval: undefined,
+                savedTime: 0,
+                running: false,
+                displayElement: document.getElementById('breakTimeDisplay'),
+                startButtonElement: document.getElementById('breakStartButton'),
+                stopButtonElement: document.getElementById('breakStopButton'),
+                resetButtonElement: document.getElementById('breakResetButton'),
+                contentElement: document.getElementById('breakTimerContent'),
+                tabButtonElement: document.getElementById('breakTabButton'),
+                lsKeys: {
+                    savedTime: 'breakTimerSavedTime',
+                    startTime: 'breakTimerStartTime',
+                    running: 'breakTimerRunning'
+                }
+            }
+        };
+        let activeTimerId = 'work'; // Default active timer
+        const LS_ACTIVE_TAB = 'timerActiveTab';
 
         /**
-         * Load timer state from localStorage when the page loads.
+         * Switches the active tab and timer view.
+         */
+        function switchTab(tabId) {
+            if (!timers[tabId]) return;
+
+            activeTimerId = tabId;
+            localStorage.setItem(LS_ACTIVE_TAB, tabId);
+
+            for (const id in timers) {
+                const timer = timers[id];
+                if (id === tabId) {
+                    timer.contentElement.style.display = 'block';
+                    timer.tabButtonElement.classList.add('active');
+                } else {
+                    timer.contentElement.style.display = 'none';
+                    timer.tabButtonElement.classList.remove('active');
+                }
+                updateDisplay(id);
+            }
+        }
+
+        /**
+         * Load timer states and active tab from localStorage.
          */
         window.addEventListener('load', () => {
-            const storedSavedTime = localStorage.getItem(LS_SAVED_TIME);
-            const storedStartTime = localStorage.getItem(LS_START_TIME);
-            const storedRunning = localStorage.getItem(LS_RUNNING);
-
-            if (storedSavedTime !== null) {
-                savedTime = parseInt(storedSavedTime, 10);
+            const storedActiveTab = localStorage.getItem(LS_ACTIVE_TAB);
+            if (storedActiveTab && timers[storedActiveTab]) {
+                activeTimerId = storedActiveTab;
             }
 
-            if (storedRunning === 'true' && storedStartTime !== null) {
-                // Timer was running when the page was closed/reloaded.
-                startTime = parseInt(storedStartTime, 10); // Restore the original start time of that run.
-                running = true;
+            for (const timerId in timers) {
+                const timer = timers[timerId];
+                const storedSavedTime = localStorage.getItem(timer.lsKeys.savedTime);
+                const storedStartTime = localStorage.getItem(timer.lsKeys.startTime);
+                const storedRunning = localStorage.getItem(timer.lsKeys.running);
 
-                // The time elapsed while the page was closed is automatically accounted for
-                // in updateDisplay because `startTime` is from the past and `new Date().getTime()` in updateDisplay is current.
-                // `difference = (new Date().getTime() - startTime) + savedTime` will correctly calculate total time.
-                
-                tInterval = setInterval(updateDisplay, 1000); // Restart the interval
-                startButton.disabled = true;
-                stopButton.disabled = false;
-                resetButton.disabled = false;
-            } else {
-                // Timer was not running (paused or reset) or no stored state.
-                running = false; 
-                startButton.disabled = false;
-                stopButton.disabled = true;
+                if (storedSavedTime !== null) {
+                    timer.savedTime = parseInt(storedSavedTime, 10);
+                }
+
+                if (storedRunning === 'true' && storedStartTime !== null) {
+                    timer.startTime = parseInt(storedStartTime, 10);
+                    timer.running = true;
+                    
+                    if (timer.tInterval) clearInterval(timer.tInterval);
+                    timer.tInterval = setInterval(() => updateDisplay(timerId), 1000);
+                    
+                    timer.startButtonElement.disabled = true;
+                    timer.stopButtonElement.disabled = false;
+                    timer.resetButtonElement.disabled = false;
+                } else {
+                    timer.running = false;
+                    timer.startButtonElement.disabled = false;
+                    timer.stopButtonElement.disabled = true;
+                }
+                updateDisplay(timerId);
             }
-            updateDisplay(); // Update the display with the loaded state.
+
+            timers.work.tabButtonElement.addEventListener('click', () => switchTab('work'));
+            timers.break.tabButtonElement.addEventListener('click', () => switchTab('break'));
+            switchTab(activeTimerId);
+
+            for (const timerId in timers) {
+                const timer = timers[timerId];
+                timer.startButtonElement.addEventListener('click', () => startTimer(timerId));
+                timer.stopButtonElement.addEventListener('click', () => stopTimer(timerId));
+                timer.resetButtonElement.addEventListener('click', () => resetTimer(timerId));
+            }
         });
 
         /**
-         * Starts or resumes the timer.
+         * Starts or resumes the specified timer.
+         * If the other timer is running, it will be stopped first.
          */
-        function startTimer() {
-            if (!running) {
-                startTime = new Date().getTime(); // Get current time as the starting point for this segment.
-                                                  // `savedTime` already holds time from previous paused segments.
+        function startTimer(timerIdToStart) {
+            const timerToStart = timers[timerIdToStart];
+
+            // Determine the other timer ID
+            const otherTimerId = timerIdToStart === 'work' ? 'break' : 'work';
+            const otherTimer = timers[otherTimerId];
+
+            // If the other timer is running, stop it first
+            if (otherTimer.running) {
+                stopTimer(otherTimerId); // This will update its state, UI, and localStorage
+            }
+
+            // Now proceed to start the requested timer
+            if (!timerToStart.running) {
+                timerToStart.startTime = new Date().getTime();
                 
-                // Save state to localStorage
-                localStorage.setItem(LS_START_TIME, startTime);
-                localStorage.setItem(LS_SAVED_TIME, savedTime); // Persist `savedTime` accumulated *before* this run.
-                localStorage.setItem(LS_RUNNING, 'true');
+                localStorage.setItem(timerToStart.lsKeys.startTime, timerToStart.startTime);
+                localStorage.setItem(timerToStart.lsKeys.savedTime, timerToStart.savedTime);
+                localStorage.setItem(timerToStart.lsKeys.running, 'true');
 
-                tInterval = setInterval(updateDisplay, 1000); 
-                running = true;
+                if (timerToStart.tInterval) clearInterval(timerToStart.tInterval);
+                timerToStart.tInterval = setInterval(() => updateDisplay(timerIdToStart), 1000); 
+                timerToStart.running = true;
 
-                startButton.disabled = true;
-                stopButton.disabled = false;
-                resetButton.disabled = false; 
+                timerToStart.startButtonElement.disabled = true;
+                timerToStart.stopButtonElement.disabled = false;
+                timerToStart.resetButtonElement.disabled = false; 
             }
         }
 
         /**
-         * Stops or pauses the timer.
+         * Stops or pauses the specified timer.
          */
-        function stopTimer() {
-            if (running) {
-                clearInterval(tInterval); 
-                // Add the duration of the segment that just ended to savedTime.
-                savedTime += (new Date().getTime() - startTime);
-                running = false; 
+        function stopTimer(timerId) {
+            const timer = timers[timerId];
+            if (timer.running) {
+                clearInterval(timer.tInterval);
+                timer.tInterval = null;
+                timer.savedTime += (new Date().getTime() - timer.startTime);
+                timer.running = false;
 
-                // Save state to localStorage
-                localStorage.setItem(LS_SAVED_TIME, savedTime); // `savedTime` now includes the segment just ended.
-                localStorage.setItem(LS_RUNNING, 'false');
-                localStorage.removeItem(LS_START_TIME); // Clean up LS_START_TIME as it's not needed when paused.
+                localStorage.setItem(timer.lsKeys.savedTime, timer.savedTime);
+                localStorage.setItem(timer.lsKeys.running, 'false');
+                localStorage.removeItem(timer.lsKeys.startTime);
 
-                startButton.disabled = false;
-                stopButton.disabled = true;
-                updateDisplay(); // Explicitly update display to show the final paused time.
+                timer.startButtonElement.disabled = false;
+                timer.stopButtonElement.disabled = true;
+                updateDisplay(timerId);
             }
         }
 
         /**
-         * Resets the timer to zero.
+         * Resets the specified timer to zero.
          */
-        function resetTimer() {
-            clearInterval(tInterval); 
-            savedTime = 0;            
-            running = false;          
+        function resetTimer(timerId) {
+            const timer = timers[timerId];
+            clearInterval(timer.tInterval);
+            timer.tInterval = null; 
+            timer.savedTime = 0;            ar
+            timer.running = false;          
+            timer.startTime = undefined;
 
-            timeDisplay.innerHTML = "00:00:00"; 
+            timer.displayElement.innerHTML = "00:00:00"; 
 
-            // Clear state from localStorage
-            localStorage.removeItem(LS_SAVED_TIME);
-            localStorage.removeItem(LS_START_TIME);
-            localStorage.removeItem(LS_RUNNING);
+            localStorage.removeItem(timer.lsKeys.savedTime);
+            localStorage.removeItem(timer.lsKeys.startTime);
+            localStorage.removeItem(timer.lsKeys.running);
 
-            startButton.disabled = false;
-            stopButton.disabled = true; 
+            timer.startButtonElement.disabled = false;
+            timer.stopButtonElement.disabled = true; 
         }
 
         /**
-         * Updates the time display.
-         * Calculates the elapsed time and formats it as HH:MM:SS.
+         * Updates the time display for the specified timer.
          */
-        function updateDisplay() {
+        function updateDisplay(timerId) {
+            const timer = timers[timerId];
+            if (!timer || !timer.displayElement) return;
+
             let difference;
-
-            if (running) {
-                // If running, current elapsed time is duration of current segment + time from previous paused segments.
-                difference = (new Date().getTime() - startTime) + savedTime;
+            if (timer.running) {
+                difference = (new Date().getTime() - timer.startTime) + timer.savedTime;
             } else {
-                // If not running (paused or reset), display the total accumulated savedTime.
-                difference = savedTime;
+                difference = timer.savedTime;
             }
 
             let hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
@@ -179,14 +282,8 @@
             minutes = (minutes < 10) ? "0" + minutes : minutes;
             seconds = (seconds < 10) ? "0" + seconds : seconds;
             
-            timeDisplay.innerHTML = `${hours}:${minutes}:${seconds}`;
+            timer.displayElement.innerHTML = `${hours}:${minutes}:${seconds}`;
         }
-
-        // Event Listeners for buttons
-        startButton.addEventListener('click', startTimer);
-        stopButton.addEventListener('click', stopTimer);
-        resetButton.addEventListener('click', resetTimer);
-
     </script>
 </body>
 </html>
