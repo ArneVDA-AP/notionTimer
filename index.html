@@ -57,8 +57,49 @@
         // Timer State Variables
         let startTime;            // Timestamp when the timer was started or resumed
         let tInterval;            // Holds the interval ID for setInterval
-        let savedTime = 0;        // Accumulated time when the timer is paused
+        let savedTime = 0;        // Accumulated time when the timer is paused (in milliseconds)
         let running = false;      // Boolean flag to check if the timer is currently running
+
+        // localStorage keys
+        const LS_SAVED_TIME = 'timerSavedTime';
+        const LS_START_TIME = 'timerStartTime';
+        const LS_RUNNING = 'timerRunning';
+
+        /**
+         * Load timer state from localStorage when the page loads.
+         */
+        window.addEventListener('load', () => {
+            const storedSavedTime = localStorage.getItem(LS_SAVED_TIME);
+            const storedStartTime = localStorage.getItem(LS_START_TIME);
+            const storedRunning = localStorage.getItem(LS_RUNNING);
+
+            if (storedSavedTime !== null) {
+                savedTime = parseInt(storedSavedTime, 10);
+            }
+
+            if (storedRunning === 'true' && storedStartTime !== null) {
+                // Timer was running when the page was closed/reloaded
+                startTime = parseInt(storedStartTime, 10);
+                running = true;
+
+                // The time elapsed while the page was closed will be accounted for
+                // by updateDisplay using the loaded startTime and savedTime.
+                
+                tInterval = setInterval(updateDisplay, 1000); // Restart the interval
+                startButton.disabled = true;
+                stopButton.disabled = false;
+                resetButton.disabled = false;
+            } else {
+                // Timer was not running (paused or reset) or no stored state
+                running = false; // Ensure running is false if not explicitly true from storage
+                startButton.disabled = false;
+                stopButton.disabled = true;
+                // resetButton state is fine as is (enabled by default).
+            }
+
+            // Update the display with the loaded state
+            updateDisplay();
+        });
 
         /**
          * Starts or resumes the timer.
@@ -67,9 +108,12 @@
             if (!running) {
                 startTime = new Date().getTime(); // Get current time as the starting point for this segment
                 
-                // Update the display every second
+                // Save state to localStorage
+                localStorage.setItem(LS_START_TIME, startTime);
+                localStorage.setItem(LS_SAVED_TIME, savedTime); // Save the time accumulated *before* this run
+                localStorage.setItem(LS_RUNNING, 'true');
+
                 tInterval = setInterval(updateDisplay, 1000); 
-                
                 running = true;
 
                 // Update button states
@@ -85,12 +129,19 @@
         function stopTimer() {
             if (running) {
                 clearInterval(tInterval); // Stop the interval
+                // Update savedTime with the duration of the segment that just ended
                 savedTime += (new Date().getTime() - startTime);
-                running = false;
+                running = false; // Set running to false before updating display
+
+                // Save state to localStorage
+                localStorage.setItem(LS_SAVED_TIME, savedTime);
+                localStorage.setItem(LS_RUNNING, 'false');
+                localStorage.removeItem(LS_START_TIME); // Clean up startTime as it's not needed when paused
 
                 // Update button states
                 startButton.disabled = false;
                 stopButton.disabled = true;
+                updateDisplay(); // Explicitly update display to show the final paused time
             }
         }
 
@@ -104,9 +155,15 @@
 
             timeDisplay.innerHTML = "00:00:00"; 
 
+            // Clear state from localStorage
+            localStorage.removeItem(LS_SAVED_TIME);
+            localStorage.removeItem(LS_START_TIME);
+            localStorage.removeItem(LS_RUNNING);
+
             // Update button states
             startButton.disabled = false;
             stopButton.disabled = true; 
+            // resetButton remains enabled
         }
 
         /**
@@ -114,12 +171,13 @@
          * Calculates the elapsed time and formats it as HH:MM:SS.
          */
         function updateDisplay() {
-            let currentTime = new Date().getTime();
             let difference;
 
             if (running) {
-                difference = (currentTime - startTime) + savedTime;
+                // If running, calculate current elapsed time based on startTime and savedTime
+                difference = (new Date().getTime() - startTime) + savedTime;
             } else {
+                // If not running (paused or reset), display the savedTime
                 difference = savedTime;
             }
 
