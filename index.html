@@ -9,7 +9,7 @@
     <style>
         :root {
             /* Default Theme: Nordic Night - Applied to the timer component */
-            --bg-container: #3B4252; /* Was --bg-body, now for the timer card */
+            --bg-container: #3B4252;
             --text-primary: #ECEFF4;
             --text-secondary: #D8DEE9;
             --accent-primary: #88C0D0;
@@ -31,16 +31,15 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #191919; /* Fixed background color */
-            color: var(--text-primary); /* Default text color, for elements outside themed container if any */
+            color: var(--text-primary);
             height: 100vh;
             overflow: hidden;
-            /* No transition needed for body background as it's fixed */
         }
         .font-roboto-mono {
             font-family: 'Roboto Mono', monospace;
         }
         .timer-container {
-            background-color: var(--bg-container); /* This will change with themes */
+            background-color: var(--bg-container);
             transition: background-color 0.3s ease;
         }
         .time-display {
@@ -51,114 +50,83 @@
 
         /* Buttons Styling */
         .btn {
-            font-weight: 600; /* semibold */
-            padding-top: 0.75rem; /* py-3 */
-            padding-bottom: 0.75rem; /* py-3 */
-            padding-left: 1rem; /* px-4 */
-            padding-right: 1rem; /* px-4 */
-            border-radius: 0.5rem; /* rounded-lg */
-            font-size: 1.125rem; /* text-lg */
+            font-weight: 600; padding-top: 0.75rem; padding-bottom: 0.75rem;
+            padding-left: 1rem; padding-right: 1rem; border-radius: 0.5rem;
+            font-size: 1.125rem;
             transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out, border-color 0.15s ease-in-out;
         }
         @media (min-width: 640px) { /* sm: */
-            .btn {
-                padding-top: 1rem; /* sm:py-4 */
-                padding-bottom: 1rem; /* sm:py-4 */
-                font-size: 1.25rem; /* sm:text-xl */
-            }
+            .btn { padding-top: 1rem; padding-bottom: 1rem; font-size: 1.25rem; }
         }
-        .btn:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px var(--focus-ring-color);
-        }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .btn:focus { outline: none; box-shadow: 0 0 0 3px var(--focus-ring-color); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .btn-primary {
-            background-color: var(--accent-primary);
-            color: var(--text-on-accent-primary);
-        }
-        .btn-primary:hover:not(:disabled) {
-            background-color: var(--accent-primary-hover);
-        }
-        .btn-primary:active:not(:disabled) {
-            background-color: var(--accent-primary-active);
-        }
+        .btn-primary { background-color: var(--accent-primary); color: var(--text-on-accent-primary); }
+        .btn-primary:hover:not(:disabled) { background-color: var(--accent-primary-hover); }
+        .btn-primary:active:not(:disabled) { background-color: var(--accent-primary-active); }
 
-        .btn-secondary {
-            background-color: var(--accent-secondary);
-            color: var(--text-on-accent-secondary);
-        }
-        .btn-secondary:hover:not(:disabled) {
-            background-color: var(--accent-secondary-hover);
-        }
-        .btn-secondary:active:not(:disabled) {
-            background-color: var(--accent-secondary-active);
-        }
+        .btn-secondary { background-color: var(--accent-secondary); color: var(--text-on-accent-secondary); }
+        .btn-secondary:hover:not(:disabled) { background-color: var(--accent-secondary-hover); }
+        .btn-secondary:active:not(:disabled) { background-color: var(--accent-secondary-active); }
         
         .btn-outline {
-            background-color: transparent;
-            border: 2px solid var(--border-primary);
-            color: var(--text-secondary);
+            background-color: transparent; border: 2px solid var(--border-primary); color: var(--text-secondary);
         }
         .btn-outline:hover:not(:disabled) {
-            background-color: var(--time-display-bg);
-            color: var(--text-primary);
-            border-color: var(--accent-primary-hover);
+            background-color: var(--time-display-bg); color: var(--text-primary); border-color: var(--accent-primary-hover);
         }
         .btn-outline:active:not(:disabled) {
-            background-color: var(--accent-primary-active);
-            color: var(--text-on-accent-primary);
-            border-color: var(--accent-primary-active);
+            background-color: var(--accent-primary-active); color: var(--text-on-accent-primary); border-color: var(--accent-primary-active);
         }
 
         /* Tabs Styling */
-        .tab-bar {
-            border-bottom: 1px solid var(--border-primary);
-        }
+        .tab-bar { border-bottom: 1px solid var(--border-primary); }
         .tab-button {
-            padding-top: 0.75rem; padding-bottom: 0.75rem;
-            padding-left: 1.5rem; padding-right: 1.5rem;
-            font-size: 1.125rem;
-            color: var(--text-secondary);
-            border-bottom-width: 2px;
+            padding-top: 0.75rem; padding-bottom: 0.75rem; padding-left: 1.5rem; padding-right: 1.5rem;
+            font-size: 1.125rem; color: var(--text-secondary); border-bottom-width: 2px;
             border-color: var(--tab-inactive-border);
             transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out;
         }
-        .tab-button:hover {
-            border-color: var(--tab-hover-border);
-            color: var(--text-primary);
-        }
-        .tab-button.active {
-            color: var(--text-primary);
-            border-color: var(--tab-active-border);
-            font-weight: 600;
-        }
+        .tab-button:hover { border-color: var(--tab-hover-border); color: var(--text-primary); }
+        .tab-button.active { color: var(--text-primary); border-color: var(--tab-active-border); font-weight: 600; }
         .tab-button:focus { outline: none; }
 
-        .theme-switcher button {
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            margin-left: 0.5rem;
-            border: 1px solid var(--border-primary);
-            color: var(--text-secondary);
-            background-color: var(--bg-container); /* Theme switcher buttons should match container bg */
-            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        /* Theme Switcher Circles */
+        .theme-switcher {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.65rem; /* Space between circles */
         }
-        .theme-switcher button:hover {
-            background-color: var(--accent-primary-hover);
-            color: var(--text-on-accent-primary);
-            border-color: var(--accent-primary-hover);
+        .theme-circle {
+            width: 22px; 
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid transparent; /* For active state and focus visibility */
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            padding: 0; /* Remove default button padding */
+            appearance: none; /* Removes default browser styling for buttons */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            font-size: 0; /* Hide any accidental text/whitespace */
         }
-        .theme-switcher button.active-theme {
-            background-color: var(--accent-primary);
-            color: var(--text-on-accent-primary);
-            border-color: var(--accent-primary);
-            font-weight: 600;
+        .theme-circle:focus-visible { /* More specific focus for keyboard users */
+            outline: none;
+            border-color: var(--focus-ring-color); /* Use a theme-aware focus color for the border */
+            box-shadow: 0 0 0 2px var(--focus-ring-color); /* Optional: additional outer ring */
         }
+        .theme-circle:hover {
+            transform: scale(1.15);
+        }
+        .theme-circle.active-theme {
+            border-color: var(--text-primary); /* Highlight active theme with a contrasting border */
+            transform: scale(1.1); 
+        }
+
+        /* Specific theme preview colors for the circles themselves */
+        .theme-circle[data-theme="nordicNight"] { background-color: #88C0D0; } /* Light Blue from Nordic */
+        .theme-circle[data-theme="zenithWhite"] { background-color: #3B82F6; } /* Blue from Zenith */
+        .theme-circle[data-theme="crimsonDusk"] { background-color: #E53E3E; } /* Red from Crimson */
 
     </style>
 </head>
@@ -166,10 +134,10 @@
 
     <div class="timer-container p-6 sm:p-10 rounded-xl shadow-2xl w-full max-w-2xl">
         <!-- Theme Switcher -->
-        <div class="theme-switcher mb-4 text-right">
-            <button data-theme="nordicNight">Nordic</button>
-            <button data-theme="zenithWhite">Zenith</button>
-            <button data-theme="crimsonDusk">Dusk</button>
+        <div class="theme-switcher mb-4">
+            <button class="theme-circle" data-theme="nordicNight" aria-label="Nordic Night Theme"></button>
+            <button class="theme-circle" data-theme="zenithWhite" aria-label="Zenith White Theme"></button>
+            <button class="theme-circle" data-theme="crimsonDusk" aria-label="Crimson Dusk Theme"></button>
         </div>
 
         <!-- Tabs -->
@@ -178,7 +146,7 @@
             <button id="breakTabButton" data-tab="break" class="tab-button">Break</button>
         </div>
 
-        <!-- Timer Content Panes -->
+        <!-- Timer Content Panes (HTML structure unchanged) -->
         <div id="workTimerContent" class="timer-content">
             <div id="workTimeDisplay" class="time-display text-6xl sm:text-8xl font-roboto-mono mb-10 sm:mb-12 text-center py-4 rounded-lg">
                 00:00:00
@@ -205,69 +173,37 @@
     <script>
         const themes = {
             nordicNight: {
-                // '--bg-body' removed
-                '--bg-container': '#3B4252',
-                '--text-primary': '#ECEFF4',
-                '--text-secondary': '#D8DEE9',
-                '--accent-primary': '#88C0D0',
-                '--accent-primary-hover': '#8FBCBB',
-                '--accent-primary-active': '#81A1C1',
-                '--accent-secondary': '#5E81AC',
-                '--accent-secondary-hover': '#4C566A',
-                '--accent-secondary-active': '#434C5E',
-                '--text-on-accent-primary': '#2E3440',
-                '--text-on-accent-secondary': '#ECEFF4',
-                '--border-primary': '#4C566A',
-                '--focus-ring-color': 'rgba(143, 188, 187, 0.5)',
-                '--time-display-bg': 'rgba(76, 86, 106, 0.3)',
-                '--tab-inactive-border': 'transparent',
-                '--tab-hover-border': '#5E81AC',
-                '--tab-active-border': '#ECEFF4',
+                '--bg-container': '#3B4252', '--text-primary': '#ECEFF4', '--text-secondary': '#D8DEE9',
+                '--accent-primary': '#88C0D0', '--accent-primary-hover': '#8FBCBB', '--accent-primary-active': '#81A1C1',
+                '--accent-secondary': '#5E81AC', '--accent-secondary-hover': '#4C566A', '--accent-secondary-active': '#434C5E',
+                '--text-on-accent-primary': '#2E3440', '--text-on-accent-secondary': '#ECEFF4',
+                '--border-primary': '#4C566A', '--focus-ring-color': 'rgba(143, 188, 187, 0.5)',
+                '--time-display-bg': 'rgba(76, 86, 106, 0.3)', '--tab-inactive-border': 'transparent',
+                '--tab-hover-border': '#5E81AC', '--tab-active-border': '#ECEFF4',
             },
             zenithWhite: {
-                // '--bg-body' removed
-                '--bg-container': '#FFFFFF',
-                '--text-primary': '#1F2937',
-                '--text-secondary': '#4B5563',
-                '--accent-primary': '#3B82F6',
-                '--accent-primary-hover': '#2563EB',
-                '--accent-primary-active': '#1D4ED8',
-                '--accent-secondary': '#6B7280',
-                '--accent-secondary-hover': '#4B5563',
-                '--accent-secondary-active': '#374151',
-                '--text-on-accent-primary': '#FFFFFF',
-                '--text-on-accent-secondary': '#FFFFFF',
-                '--border-primary': '#D1D5DB',
-                '--focus-ring-color': 'rgba(59, 130, 246, 0.4)',
-                '--time-display-bg': 'rgba(229, 231, 235, 0.5)',
-                '--tab-inactive-border': 'transparent',
-                '--tab-hover-border': '#9CA3AF',
-                '--tab-active-border': '#1F2937',
+                '--bg-container': '#FFFFFF', '--text-primary': '#1F2937', '--text-secondary': '#4B5563',
+                '--accent-primary': '#3B82F6', '--accent-primary-hover': '#2563EB', '--accent-primary-active': '#1D4ED8',
+                '--accent-secondary': '#6B7280', '--accent-secondary-hover': '#4B5563', '--accent-secondary-active': '#374151',
+                '--text-on-accent-primary': '#FFFFFF', '--text-on-accent-secondary': '#FFFFFF',
+                '--border-primary': '#D1D5DB', '--focus-ring-color': 'rgba(59, 130, 246, 0.4)',
+                '--time-display-bg': 'rgba(229, 231, 235, 0.5)', '--tab-inactive-border': 'transparent',
+                '--tab-hover-border': '#9CA3AF', '--tab-active-border': '#1F2937',
             },
             crimsonDusk: {
-                // '--bg-body' removed
-                '--bg-container': '#2C2C2C',
-                '--text-primary': '#E0E0E0',
-                '--text-secondary': '#B0B0B0',
-                '--accent-primary': '#E53E3E',
-                '--accent-primary-hover': '#C53030',
-                '--accent-primary-active': '#9B2C2C',
-                '--accent-secondary': '#4A5568',
-                '--accent-secondary-hover': '#2D3748',
-                '--accent-secondary-active': '#1A202C',
-                '--text-on-accent-primary': '#FFFFFF',
-                '--text-on-accent-secondary': '#FFFFFF',
-                '--border-primary': '#4A5568',
-                '--focus-ring-color': 'rgba(229, 62, 62, 0.5)',
-                '--time-display-bg': 'rgba(74, 85, 104, 0.2)',
-                '--tab-inactive-border': 'transparent',
-                '--tab-hover-border': '#718096',
-                '--tab-active-border': '#E0E0E0',
+                '--bg-container': '#2C2C2C', '--text-primary': '#E0E0E0', '--text-secondary': '#B0B0B0',
+                '--accent-primary': '#E53E3E', '--accent-primary-hover': '#C53030', '--accent-primary-active': '#9B2C2C',
+                '--accent-secondary': '#4A5568', '--accent-secondary-hover': '#2D3748', '--accent-secondary-active': '#1A202C',
+                '--text-on-accent-primary': '#FFFFFF', '--text-on-accent-secondary': '#FFFFFF',
+                '--border-primary': '#4A5568', '--focus-ring-color': 'rgba(229, 62, 62, 0.5)',
+                '--time-display-bg': 'rgba(74, 85, 104, 0.2)', '--tab-inactive-border': 'transparent',
+                '--tab-hover-border': '#718096', '--tab-active-border': '#E0E0E0',
             }
         };
 
         const LS_SELECTED_THEME = 'timerSelectedTheme';
-        const themeSwitcherButtons = document.querySelectorAll('.theme-switcher button');
+        // The selector for themeSwitcherButtons remains the same as it targets elements inside .theme-switcher
+        const themeSwitcherButtons = document.querySelectorAll('.theme-switcher button.theme-circle');
 
         function applyTheme(themeName) {
             const selectedTheme = themes[themeName];
@@ -289,6 +225,7 @@
             });
         });
         
+        // --- Timer Logic (unchanged from previous version) ---
         let timers = {
             work: {
                 startTime: undefined, tInterval: undefined, savedTime: 0, running: false,
