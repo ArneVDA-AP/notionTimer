@@ -8,9 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Default Theme: Nordic Night */
-            --bg-body: #2E3440;
-            --bg-container: #3B4252;
+            /* Default Theme: Nordic Night - Applied to the timer component */
+            --bg-container: #3B4252; /* Was --bg-body, now for the timer card */
             --text-primary: #ECEFF4;
             --text-secondary: #D8DEE9;
             --accent-primary: #88C0D0;
@@ -31,17 +30,17 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-primary);
+            background-color: #191919; /* Fixed background color */
+            color: var(--text-primary); /* Default text color, for elements outside themed container if any */
             height: 100vh;
             overflow: hidden;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            /* No transition needed for body background as it's fixed */
         }
         .font-roboto-mono {
             font-family: 'Roboto Mono', monospace;
         }
         .timer-container {
-            background-color: var(--bg-container);
+            background-color: var(--bg-container); /* This will change with themes */
             transition: background-color 0.3s ease;
         }
         .time-display {
@@ -105,12 +104,12 @@
             color: var(--text-secondary);
         }
         .btn-outline:hover:not(:disabled) {
-            background-color: var(--time-display-bg); /* Using time-display-bg for subtle hover */
+            background-color: var(--time-display-bg);
             color: var(--text-primary);
             border-color: var(--accent-primary-hover);
         }
         .btn-outline:active:not(:disabled) {
-            background-color: var(--accent-primary-active); /* More pronounced active state */
+            background-color: var(--accent-primary-active);
             color: var(--text-on-accent-primary);
             border-color: var(--accent-primary-active);
         }
@@ -120,11 +119,9 @@
             border-bottom: 1px solid var(--border-primary);
         }
         .tab-button {
-            padding-top: 0.75rem; /* py-3 */
-            padding-bottom: 0.75rem; /* py-3 */
-            padding-left: 1.5rem; /* px-6 */
-            padding-right: 1.5rem; /* px-6 */
-            font-size: 1.125rem; /* text-lg */
+            padding-top: 0.75rem; padding-bottom: 0.75rem;
+            padding-left: 1.5rem; padding-right: 1.5rem;
+            font-size: 1.125rem;
             color: var(--text-secondary);
             border-bottom-width: 2px;
             border-color: var(--tab-inactive-border);
@@ -137,11 +134,10 @@
         .tab-button.active {
             color: var(--text-primary);
             border-color: var(--tab-active-border);
-            font-weight: 600; /* semibold */
+            font-weight: 600;
         }
-        .tab-button:focus {
-            outline: none; /* Handled by btn-focus style if needed, or add specific tab focus */
-        }
+        .tab-button:focus { outline: none; }
+
         .theme-switcher button {
             padding: 0.5rem 0.75rem;
             border-radius: 0.375rem;
@@ -149,7 +145,7 @@
             margin-left: 0.5rem;
             border: 1px solid var(--border-primary);
             color: var(--text-secondary);
-            background-color: var(--bg-container);
+            background-color: var(--bg-container); /* Theme switcher buttons should match container bg */
             transition: background-color 0.2s, color 0.2s, border-color 0.2s;
         }
         .theme-switcher button:hover {
@@ -209,7 +205,7 @@
     <script>
         const themes = {
             nordicNight: {
-                '--bg-body': '#2E3440',
+                // '--bg-body' removed
                 '--bg-container': '#3B4252',
                 '--text-primary': '#ECEFF4',
                 '--text-secondary': '#D8DEE9',
@@ -229,7 +225,7 @@
                 '--tab-active-border': '#ECEFF4',
             },
             zenithWhite: {
-                '--bg-body': '#F9FAFB',
+                // '--bg-body' removed
                 '--bg-container': '#FFFFFF',
                 '--text-primary': '#1F2937',
                 '--text-secondary': '#4B5563',
@@ -249,7 +245,7 @@
                 '--tab-active-border': '#1F2937',
             },
             crimsonDusk: {
-                '--bg-body': '#1A1A1A',
+                // '--bg-body' removed
                 '--bg-container': '#2C2C2C',
                 '--text-primary': '#E0E0E0',
                 '--text-secondary': '#B0B0B0',
@@ -293,7 +289,6 @@
             });
         });
         
-        // Timer State and DOM Elements Management (unchanged from previous version)
         let timers = {
             work: {
                 startTime: undefined, tInterval: undefined, savedTime: 0, running: false,
@@ -336,7 +331,7 @@
             if (savedTheme && themes[savedTheme]) {
                 applyTheme(savedTheme);
             } else {
-                applyTheme('nordicNight'); // Default theme
+                applyTheme('nordicNight'); 
             }
 
             const storedActiveTab = localStorage.getItem(LS_ACTIVE_TAB);
