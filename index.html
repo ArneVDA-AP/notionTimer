@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Default Theme: Nordic Night */
+            /* Default Theme: Nordic Night (will be overridden by JS) */
             --bg-container: #3B4252; --text-primary: #ECEFF4; --text-secondary: #D8DEE9;
             --accent-primary: #88C0D0; --accent-primary-hover: #8FBCBB; --accent-primary-active: #81A1C1;
             --accent-secondary: #5E81AC; --accent-secondary-hover: #4C566A; --accent-secondary-active: #434C5E;
@@ -17,9 +17,9 @@
             --time-display-bg: rgba(76, 86, 106, 0.3);
             --tab-indicator-bg-inactive: #4C566A;
             --tab-indicator-bg-active: #88C0D0;
-            --settings-popup-button-bg: rgba(255,255,255,0.05);
-            --settings-popup-button-bg-hover: rgba(255,255,255,0.1);
-            --settings-popup-button-border-active: var(--accent-primary);
+            --settings-popup-button-bg: rgba(255,255,255,0.05); /* Will be themed */
+            --settings-popup-button-bg-hover: rgba(255,255,255,0.1); /* Will be themed */
+            --settings-popup-button-border-active: var(--accent-primary); /* Will be themed */
         }
 
         body {
@@ -39,14 +39,17 @@
             font-weight: 600; padding-top: 0.75rem; padding-bottom: 0.75rem;
             padding-left: 1rem; padding-right: 1rem; border-radius: 0.5rem; font-size: 1.125rem;
             transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out, border-color 0.15s ease-in-out;
-            min-height: 46px; /* Ensure consistent height for sm screens */
+            min-height: 46px; /* Consistent height */
         }
         @media (min-width: 640px) { .btn { min-height: 52px; padding-top: 1rem; padding-bottom: 1rem; font-size: 1.25rem; } }
 
-        .btn .btn-icon { margin-right: 0.5em; font-size: 0.9em; line-height: 1; }
-        .btn.icon-only .btn-icon { margin-right: 0; font-size: 1.2em; }
-        .btn.icon-only .btn-text { display: none; }
-        .btn.text-only .btn-icon { display: none; }
+        .btn .btn-icon { display: none; /* Hidden by default, shown by style class */ line-height: 1; }
+        .btn .btn-text { /* Always visible unless icon-only */ }
+
+        .btn.text-and-icons .btn-icon { display: inline; margin-right: 0.5em; font-size: 0.9em; }
+        .btn.icons-only .btn-icon { display: inline; margin-right: 0; font-size: 1.2em; }
+        .btn.icons-only .btn-text { display: none; }
+        /* .text-only needs no specific icon rule as it's hidden by default */
 
 
         .btn:focus { outline: none; box-shadow: 0 0 0 3px var(--focus-ring-color); }
@@ -86,16 +89,15 @@
         }
         .tab-button:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring-color); }
 
-        /* Settings Popup (was Theme Switcher) */
+        /* Settings Popup */
         .settings-trigger-wrapper { position: relative; display: flex; align-items: center; }
-        .settings-active-circle, .settings-theme-option, .settings-button-style-option {
-            border: 2px solid transparent; cursor: pointer;
-            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        .settings-active-circle {
+            width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--border-primary);
+            cursor: pointer; transition: transform 0.2s ease, background-color 0.2s ease;
             padding: 0; appearance: none; -webkit-appearance: none; -moz-appearance: none;
             font-size: 0; display: block;
         }
-        .settings-active-circle { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--border-primary); }
-        .settings-active-circle:focus-visible, .settings-theme-option:focus-visible, .settings-button-style-option:focus-visible {
+        .settings-active-circle:focus-visible {
             outline: none; border-color: var(--focus-ring-color); box-shadow: 0 0 0 2px var(--focus-ring-color);
         }
         .settings-active-circle:hover { transform: scale(1.15); }
@@ -103,33 +105,42 @@
         .settings-popup {
             position: absolute; top: 50%; right: calc(100% + 8px);
             transform: translateY(-50%) translateX(10px);
-            background-color: var(--bg-container); border-radius: 8px; /* Less rounded than before */
+            background-color: var(--bg-container); border-radius: 8px;
             padding: 8px; box-shadow: 0 3px 12px rgba(0,0,0,0.25);
-            display: flex; flex-direction: column; gap: 8px; /* Vertical sections */
+            display: flex; flex-direction: column; gap: 10px; /* Increased gap between sections */
             z-index: 10; opacity: 0; visibility: hidden;
             transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
-            min-width: 130px; /* Give it some base width */
+            min-width: auto; /* Let content define width */
         }
         .settings-trigger-wrapper.expanded .settings-popup {
             opacity: 1; visibility: visible; transform: translateY(-50%) translateX(0);
         }
-        .settings-popup-section { display: flex; justify-content: space-around; gap: 6px; }
+        .settings-popup-section { display: flex; justify-content: center; gap: 6px; }
 
         .settings-button-style-option {
-            width: auto; height: 26px; border-radius: 6px; padding: 0 8px;
-            font-size: 13px; line-height: 24px; color: var(--text-secondary);
+            display: inline-flex; align-items: center; justify-content: center;
+            height: 28px; border-radius: 6px; padding: 0 8px;
+            font-size: 13px; line-height: 1; color: var(--text-secondary);
             background-color: var(--settings-popup-button-bg);
-            border: 1px solid transparent; /* For active state */
+            border: 1px solid transparent;
+            cursor: pointer; transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
         }
         .settings-button-style-option:hover { background-color: var(--settings-popup-button-bg-hover); }
         .settings-button-style-option.active {
             color: var(--text-primary);
             border-color: var(--settings-popup-button-border-active);
-            font-weight: 600;
+            font-weight: 500; /* Medium weight for active */
         }
-        .settings-button-style-option .icon { margin-right: 4px; font-size: 0.9em; }
+        .settings-button-style-option .icon { margin-right: 4px; font-size: 1em; line-height: 1;}
+        .settings-button-style-option[data-style="iconsOnly"] .icon { margin-right: 0; }
 
-        .settings-theme-option { width: 18px; height: 18px; border-radius: 50%; }
+
+        .settings-theme-option {
+            width: 18px; height: 18px; border-radius: 50%; border: 2px solid transparent;
+            cursor: pointer; transition: transform 0.2s ease, border-color 0.2s ease;
+            padding: 0; appearance: none; -webkit-appearance: none; -moz-appearance: none;
+            font-size: 0; display: block;
+        }
         .settings-theme-option:hover { transform: scale(1.15); }
         .settings-theme-option[data-theme="nordicNight"] { background-color: #88C0D0; }
         .settings-theme-option[data-theme="zenithWhite"] { background-color: #3B82F6; }
@@ -146,9 +157,9 @@
                 <button id="workTabButton" data-tab="work" class="tab-button" aria-label="Work Timer"><span class="tab-indicator-visual"></span></button>
                 <button id="breakTabButton" data-tab="break" class="tab-button" aria-label="Break Timer"><span class="tab-indicator-visual"></span></button>
             </div>
-            <div class="settings-trigger-wrapper"> <!-- Renamed from theme-switcher-wrapper -->
+            <div class="settings-trigger-wrapper">
                 <button class="settings-active-circle" aria-haspopup="true" aria-expanded="false" aria-label="Open display settings"></button>
-                <div class="settings-popup"> <!-- Renamed from theme-options-popup -->
+                <div class="settings-popup">
                     <div class="settings-popup-section button-style-options">
                         <button class="settings-button-style-option" data-style="textOnly" aria-label="Text only buttons">Aa</button>
                         <button class="settings-button-style-option" data-style="textAndIcons" aria-label="Text and icon buttons"><span class="icon">▶</span>Aa</button>
@@ -163,7 +174,6 @@
             </div>
         </div>
 
-        <!-- Timer Display -->
         <div id="workTimerContent" class="timer-content">
             <div id="workTimeDisplay" class="time-display text-6xl sm:text-8xl font-roboto-mono mb-10 sm:mb-12 text-center py-4 rounded-lg">00:00:00</div>
             <div class="flex flex-col sm:flex-row justify-around space-y-4 sm:space-y-0 sm:space-x-4">
@@ -196,30 +206,47 @@
 
     <script>
         const themes = {
-            nordicNight: { /* ... theme properties ... */ '--tab-indicator-bg-inactive': '#4C566A', '--tab-indicator-bg-active': '#88C0D0', representativeColor: '#88C0D0', name: 'Nordic Night', '--settings-popup-button-border-active': '#88C0D0' },
-            zenithWhite: { /* ... theme properties ... */ '--tab-indicator-bg-inactive': '#D1D5DB', '--tab-indicator-bg-active': '#3B82F6', representativeColor: '#3B82F6', name: 'Zenith White', '--settings-popup-button-border-active': '#3B82F6' },
-            crimsonDusk: { /* ... theme properties ... */ '--tab-indicator-bg-inactive': '#4A5568', '--tab-indicator-bg-active': '#E53E3E', representativeColor: '#E53E3E', name: 'Crimson Dusk', '--settings-popup-button-border-active': '#E53E3E' }
+            nordicNight: {
+                '--bg-container': '#2E3440', '--text-primary': '#ECEFF4', '--text-secondary': '#D8DEE9',
+                '--accent-primary': '#88C0D0', '--accent-primary-hover': '#8FBCBB', '--accent-primary-active': '#81A1C1',
+                '--accent-secondary': '#5E81AC', '--accent-secondary-hover': '#4C566A', '--accent-secondary-active': '#434C5E',
+                '--text-on-accent-primary': '#2E3440', '--text-on-accent-secondary': '#ECEFF4',
+                '--border-primary': '#4C566A', '--focus-ring-color': 'rgba(143, 188, 187, 0.5)',
+                '--time-display-bg': 'rgba(46, 52, 64, 0.5)', /* Darker time display for Nordic */
+                '--tab-indicator-bg-inactive': '#4C566A', '--tab-indicator-bg-active': '#88C0D0',
+                '--settings-popup-button-bg': 'rgba(76, 86, 106, 0.3)',
+                '--settings-popup-button-bg-hover': 'rgba(76, 86, 106, 0.6)',
+                '--settings-popup-button-border-active': '#88C0D0',
+                representativeColor: '#88C0D0', name: 'Nordic Night'
+            },
+            zenithWhite: {
+                '--bg-container': '#FFFFFF', '--text-primary': '#1F2937', '--text-secondary': '#4B5563',
+                '--accent-primary': '#3B82F6', '--accent-primary-hover': '#2563EB', '--accent-primary-active': '#1D4ED8',
+                '--accent-secondary': '#6B7280', '--accent-secondary-hover': '#4B5563', '--accent-secondary-active': '#374151',
+                '--text-on-accent-primary': '#FFFFFF', '--text-on-accent-secondary': '#FFFFFF',
+                '--border-primary': '#D1D5DB', '--focus-ring-color': 'rgba(59, 130, 246, 0.4)',
+                '--time-display-bg': 'rgba(229, 231, 235, 0.7)', /* Slightly more opaque for light theme */
+                '--tab-indicator-bg-inactive': '#D1D5DB', '--tab-indicator-bg-active': '#3B82F6',
+                '--settings-popup-button-bg': 'rgba(229, 231, 235, 0.5)',
+                '--settings-popup-button-bg-hover': 'rgba(209, 213, 219, 0.7)',
+                '--settings-popup-button-border-active': '#3B82F6',
+                representativeColor: '#3B82F6', name: 'Zenith White'
+            },
+            crimsonDusk: {
+                '--bg-container': '#1A1B1E', '--text-primary': '#E0E0E0', '--text-secondary': '#A0A0A0', /* Slightly lighter secondary */
+                '--accent-primary': '#E53E3E', '--accent-primary-hover': '#C53030', '--accent-primary-active': '#9B2C2C',
+                '--accent-secondary': '#4A5568', '--accent-secondary-hover': '#2D3748', '--accent-secondary-active': '#1A202C',
+                '--text-on-accent-primary': '#FFFFFF', '--text-on-accent-secondary': '#FFFFFF',
+                '--border-primary': '#3A3B3E', /* Darker border */
+                '--focus-ring-color': 'rgba(229, 62, 62, 0.5)',
+                '--time-display-bg': 'rgba(0,0,0, 0.3)', /* Very dark, almost transparent black */
+                '--tab-indicator-bg-inactive': '#4A5568', '--tab-indicator-bg-active': '#E53E3E',
+                '--settings-popup-button-bg': 'rgba(42, 43, 46, 0.5)',
+                '--settings-popup-button-bg-hover': 'rgba(52, 53, 56, 0.7)',
+                '--settings-popup-button-border-active': '#E53E3E',
+                representativeColor: '#E53E3E', name: 'Crimson Dusk'
+            }
         };
-        // (Full theme properties from previous version should be here)
-        Object.values(themes).forEach(theme => { // Ensure all base properties are defined
-            theme['--bg-container'] = theme['--bg-container'] || '#000';
-            theme['--text-primary'] = theme['--text-primary'] || '#fff';
-            theme['--text-secondary'] = theme['--text-secondary'] || '#ccc';
-            theme['--accent-primary'] = theme['--accent-primary'] || '#777';
-            theme['--accent-primary-hover'] = theme['--accent-primary-hover'] || '#888';
-            theme['--accent-primary-active'] = theme['--accent-primary-active'] || '#999';
-            theme['--accent-secondary'] = theme['--accent-secondary'] || '#555';
-            theme['--accent-secondary-hover'] = theme['--accent-secondary-hover'] || '#666';
-            theme['--accent-secondary-active'] = theme['--accent-secondary-active'] || '#444';
-            theme['--text-on-accent-primary'] = theme['--text-on-accent-primary'] || '#000';
-            theme['--text-on-accent-secondary'] = theme['--text-on-accent-secondary'] || '#fff';
-            theme['--border-primary'] = theme['--border-primary'] || '#444';
-            theme['--focus-ring-color'] = theme['--focus-ring-color'] || 'rgba(100,100,100,0.5)';
-            theme['--time-display-bg'] = theme['--time-display-bg'] || 'rgba(50,50,50,0.3)';
-            theme['--settings-popup-button-bg'] = theme['--settings-popup-button-bg'] || 'rgba(255,255,255,0.05)';
-            theme['--settings-popup-button-bg-hover'] = theme['--settings-popup-button-bg-hover'] || 'rgba(255,255,255,0.1)';
-        });
-
 
         const LS_SELECTED_THEME = 'timerSelectedTheme';
         const LS_BUTTON_STYLE = 'timerButtonStyle';
@@ -233,11 +260,12 @@
         
         let isSettingsPopupExpanded = false;
 
-        const icons = { start: '▶', stop: '⏸', reset: '🔄' };
+        const icons = { start: '▶', stop: '⏸', reset: '⟲' }; // Updated Reset icon
 
         function applyTheme(themeName) {
             const selectedTheme = themes[themeName];
-            if (!selectedTheme) return;
+            if (!selectedTheme) { console.warn("Theme not found:", themeName); return; }
+
             for (const [property, value] of Object.entries(selectedTheme)) {
                 if (property !== 'representativeColor' && property !== 'name') {
                     document.documentElement.style.setProperty(property, value);
@@ -258,8 +286,8 @@
             });
 
             document.querySelectorAll('.btn').forEach(button => {
-                button.classList.remove('text-only', 'text-and-icons', 'icons-only');
-                button.classList.add(styleName);
+                button.classList.remove('text-only', 'text-and-icons', 'icons-only'); // Clear old styles
+                button.classList.add(styleName); // Add current style
 
                 const textSpan = button.querySelector('.btn-text');
                 const iconSpan = button.querySelector('.btn-icon');
@@ -267,27 +295,27 @@
                 let iconChar = '';
                 let ariaLabelBase = '';
 
-                if (button.id.includes('Start')) { 
+                if (button.id.includes('StartButton')) { 
                     originalText = 'Start'; iconChar = icons.start; ariaLabelBase = 'Start';
-                } else if (button.id.includes('Stop')) {
+                } else if (button.id.includes('StopButton')) {
                     originalText = 'Stop'; iconChar = icons.stop; ariaLabelBase = 'Stop';
-                } else if (button.id.includes('Reset')) {
+                } else if (button.id.includes('ResetButton')) {
                     originalText = 'Reset'; iconChar = icons.reset; ariaLabelBase = 'Reset';
                 }
                 
-                const timerType = button.closest('.timer-content').id.includes('work') ? 'Work Timer' : 'Break Timer';
+                const timerTypeElement = button.closest('.timer-content');
+                const timerType = timerTypeElement && timerTypeElement.id.includes('work') ? 'Work Timer' : 'Break Timer';
                 const fullAriaLabel = `${ariaLabelBase} ${timerType}`;
 
                 if (iconSpan) iconSpan.textContent = iconChar;
                 if (textSpan) textSpan.textContent = originalText;
                 
-                button.setAttribute('aria-label', fullAriaLabel); // Always set full ARIA label
+                button.setAttribute('aria-label', fullAriaLabel);
 
-                // Adjust visibility based on style (CSS handles this via classes now)
-                if (iconSpan) iconSpan.setAttribute('aria-hidden', styleName === 'textOnly' || styleName === 'textAndIcons');
+                // CSS now handles visibility of icon/text spans based on the main class
+                if (iconSpan) iconSpan.setAttribute('aria-hidden', styleName === 'textOnly');
             });
         }
-
 
         function toggleSettingsPopup() {
             isSettingsPopupExpanded = !isSettingsPopupExpanded;
@@ -300,14 +328,12 @@
         themeOptionButtons.forEach(button => {
             button.addEventListener('click', (event) => {
                 event.stopPropagation(); applyTheme(button.dataset.theme);
-                // Do not close popup on theme change, allow multiple settings changes
             });
         });
 
         buttonStyleOptionButtons.forEach(button => {
             button.addEventListener('click', (event) => {
                 event.stopPropagation(); applyButtonStyle(button.dataset.style);
-                 // Do not close popup on style change
             });
         });
 
@@ -317,29 +343,29 @@
             }
         });
         
-        // --- Timer Logic (largely unchanged) ---
-        let timers = { /* ... as before ... */ };
-        // (Full timers object from previous version should be here)
-        timers.work = { startTime: undefined, tInterval: undefined, savedTime: 0, running: false, displayElement: document.getElementById('workTimeDisplay'), startButtonElement: document.getElementById('workStartButton'), stopButtonElement: document.getElementById('workStopButton'), resetButtonElement: document.getElementById('workResetButton'), contentElement: document.getElementById('workTimerContent'), tabButtonElement: document.getElementById('workTabButton'), lsKeys: { savedTime: 'workTimerSavedTime', startTime: 'workTimerStartTime', running: 'workTimerRunning' }};
-        timers.break = { startTime: undefined, tInterval: undefined, savedTime: 0, running: false, displayElement: document.getElementById('breakTimeDisplay'), startButtonElement: document.getElementById('breakStartButton'), stopButtonElement: document.getElementById('breakStopButton'), resetButtonElement: document.getElementById('breakResetButton'), contentElement: document.getElementById('breakTimerContent'), tabButtonElement: document.getElementById('breakTabButton'), lsKeys: { savedTime: 'breakTimerSavedTime', startTime: 'breakTimerStartTime', running: 'breakTimerRunning' }};
-
+        let timers = {
+            work: { startTime: undefined, tInterval: undefined, savedTime: 0, running: false, displayElement: document.getElementById('workTimeDisplay'), startButtonElement: document.getElementById('workStartButton'), stopButtonElement: document.getElementById('workStopButton'), resetButtonElement: document.getElementById('workResetButton'), contentElement: document.getElementById('workTimerContent'), tabButtonElement: document.getElementById('workTabButton'), lsKeys: { savedTime: 'workTimerSavedTime', startTime: 'workTimerStartTime', running: 'workTimerRunning' } },
+            break: { startTime: undefined, tInterval: undefined, savedTime: 0, running: false, displayElement: document.getElementById('breakTimeDisplay'), startButtonElement: document.getElementById('breakStartButton'), stopButtonElement: document.getElementById('breakStopButton'), resetButtonElement: document.getElementById('breakResetButton'), contentElement: document.getElementById('breakTimerContent'), tabButtonElement: document.getElementById('breakTabButton'), lsKeys: { savedTime: 'breakTimerSavedTime', startTime: 'breakTimerStartTime', running: 'breakTimerRunning' } }
+        };
         let activeTimerId = 'work'; const LS_ACTIVE_TAB = 'timerActiveTab';
-        function switchTab(tabId) { if (!timers[tabId]) return; activeTimerId = tabId; localStorage.setItem(LS_ACTIVE_TAB, tabId); for (const id in timers) { const timer = timers[id]; timer.contentElement.style.display = (id === tabId) ? 'block' : 'none'; timer.tabButtonElement.classList.toggle('active', id === tabId); updateDisplay(id); }}
+        function switchTab(tabId) { if (!timers[tabId]) return; activeTimerId = tabId; localStorage.setItem(LS_ACTIVE_TAB, tabId); for (const id in timers) { const timer = timers[id]; timer.contentElement.style.display = (id === tabId) ? 'block' : 'none'; timer.tabButtonElement.classList.toggle('active', id === tabId); updateDisplay(id); } }
         
         window.addEventListener('load', () => {
-            const savedTheme = localStorage.getItem(LS_SELECTED_THEME);
-            applyTheme((savedTheme && themes[savedTheme]) ? savedTheme : 'nordicNight');
+            const savedTheme = localStorage.getItem(LS_SELECTED_THEME) || 'nordicNight';
+            applyTheme(savedTheme);
 
-            const savedButtonStyle = localStorage.getItem(LS_BUTTON_STYLE);
-            applyButtonStyle(savedButtonStyle || 'textOnly'); // Default to textOnly
+            const savedButtonStyle = localStorage.getItem(LS_BUTTON_STYLE) || 'textAndIcons'; // Default to textAndIcons to match image
+            applyButtonStyle(savedButtonStyle);
 
-            const storedActiveTab = localStorage.getItem(LS_ACTIVE_TAB); if (storedActiveTab && timers[storedActiveTab]) activeTimerId = storedActiveTab;
+            const storedActiveTab = localStorage.getItem(LS_ACTIVE_TAB) || 'work';
+            activeTimerId = storedActiveTab;
+
             for (const timerId in timers) { const timer = timers[timerId]; const storedSavedTime = localStorage.getItem(timer.lsKeys.savedTime); const storedStartTime = localStorage.getItem(timer.lsKeys.startTime); const storedRunning = localStorage.getItem(timer.lsKeys.running); if (storedSavedTime !== null) timer.savedTime = parseInt(storedSavedTime, 10); if (storedRunning === 'true' && storedStartTime !== null) { timer.startTime = parseInt(storedStartTime, 10); timer.running = true; if (timer.tInterval) clearInterval(timer.tInterval); timer.tInterval = setInterval(() => updateDisplay(timerId), 1000); timer.startButtonElement.disabled = true; timer.stopButtonElement.disabled = false; timer.resetButtonElement.disabled = false; } else { timer.running = false; timer.startButtonElement.disabled = false; timer.stopButtonElement.disabled = true; } updateDisplay(timerId); }
             timers.work.tabButtonElement.addEventListener('click', () => switchTab('work')); timers.break.tabButtonElement.addEventListener('click', () => switchTab('break')); switchTab(activeTimerId);
             for (const timerId in timers) { const timer = timers[timerId]; timer.startButtonElement.addEventListener('click', () => startTimer(timerId)); timer.stopButtonElement.addEventListener('click', () => stopTimer(timerId)); timer.resetButtonElement.addEventListener('click', () => resetTimer(timerId)); }
         });
-        function startTimer(timerIdToStart) { const timerToStart = timers[timerIdToStart]; const otherTimerId = timerIdToStart === 'work' ? 'break' : 'work'; const otherTimer = timers[otherTimerId]; if (otherTimer.running) stopTimer(otherTimerId); if (!timerToStart.running) { timerToStart.startTime = new Date().getTime(); localStorage.setItem(timerToStart.lsKeys.startTime, timerToStart.startTime); localStorage.setItem(timerToStart.lsKeys.savedTime, timerToStart.savedTime); localStorage.setItem(timerToStart.lsKeys.running, 'true'); if (timerToStart.tInterval) clearInterval(timerToStart.tInterval); timerToStart.tInterval = setInterval(() => updateDisplay(timerIdToStart), 1000);  timerToStart.running = true; timerToStart.startButtonElement.disabled = true; timerToStart.stopButtonElement.disabled = false; timerToStart.resetButtonElement.disabled = false; }}
-        function stopTimer(timerId) { const timer = timers[timerId]; if (timer.running) { clearInterval(timer.tInterval); timer.tInterval = null; timer.savedTime += (new Date().getTime() - timer.startTime); timer.running = false; localStorage.setItem(timer.lsKeys.savedTime, timer.savedTime); localStorage.setItem(timer.lsKeys.running, 'false'); localStorage.removeItem(timer.lsKeys.startTime); timer.startButtonElement.disabled = false; timer.stopButtonElement.disabled = true; updateDisplay(timerId); }}
+        function startTimer(timerIdToStart) { const timerToStart = timers[timerIdToStart]; const otherTimerId = timerIdToStart === 'work' ? 'break' : 'work'; const otherTimer = timers[otherTimerId]; if (otherTimer.running) stopTimer(otherTimerId); if (!timerToStart.running) { timerToStart.startTime = new Date().getTime(); localStorage.setItem(timerToStart.lsKeys.startTime, timerToStart.startTime); localStorage.setItem(timerToStart.lsKeys.savedTime, timerToStart.savedTime); localStorage.setItem(timerToStart.lsKeys.running, 'true'); if (timerToStart.tInterval) clearInterval(timerToStart.tInterval); timerToStart.tInterval = setInterval(() => updateDisplay(timerIdToStart), 1000);  timerToStart.running = true; timerToStart.startButtonElement.disabled = true; timerToStart.stopButtonElement.disabled = false; timerToStart.resetButtonElement.disabled = false; } }
+        function stopTimer(timerId) { const timer = timers[timerId]; if (timer.running) { clearInterval(timer.tInterval); timer.tInterval = null; timer.savedTime += (new Date().getTime() - timer.startTime); timer.running = false; localStorage.setItem(timer.lsKeys.savedTime, timer.savedTime); localStorage.setItem(timer.lsKeys.running, 'false'); localStorage.removeItem(timer.lsKeys.startTime); timer.startButtonElement.disabled = false; timer.stopButtonElement.disabled = true; updateDisplay(timerId); } }
         function resetTimer(timerId) { const timer = timers[timerId]; clearInterval(timer.tInterval); timer.tInterval = null;  timer.savedTime = 0; timer.running = false; timer.startTime = undefined; localStorage.removeItem(timer.lsKeys.savedTime); localStorage.removeItem(timer.lsKeys.startTime); localStorage.removeItem(timer.lsKeys.running); timer.startButtonElement.disabled = false; timer.stopButtonElement.disabled = true;  updateDisplay(timerId); }
         function updateDisplay(timerId) { const timer = timers[timerId]; if (!timer || !timer.displayElement) return; let difference = timer.running ? (new Date().getTime() - timer.startTime) + timer.savedTime : timer.savedTime; let h = Math.floor((difference / (3600000)) % 24); let m = Math.floor((difference / 60000) % 60); let s = Math.floor((difference / 1000) % 60); timer.displayElement.innerHTML = `${h<10?"0"+h:h}:${m<10?"0"+m:m}:${s<10?"0"+s:s}`; }
     </script>
