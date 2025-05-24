@@ -8,67 +8,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Default Theme: Nordic Night - Applied to the timer component */
-            --bg-container: #3B4252;
-            --text-primary: #ECEFF4;
-            --text-secondary: #D8DEE9;
-            --accent-primary: #88C0D0;
-            --accent-primary-hover: #8FBCBB;
-            --accent-primary-active: #81A1C1;
-            --accent-secondary: #5E81AC;
-            --accent-secondary-hover: #4C566A;
-            --accent-secondary-active: #434C5E;
-            --text-on-accent-primary: #2E3440;
-            --text-on-accent-secondary: #ECEFF4;
-            --border-primary: #4C566A;
-            --focus-ring-color: rgba(143, 188, 187, 0.5);
-            --time-display-bg: rgba(76, 86, 106, 0.3);
-            --tab-inactive-border: transparent;
-            --tab-hover-border: #5E81AC;
-            --tab-active-border: var(--text-primary);
+            /* Default Theme: Nordic Night */
+            --bg-container: #3B4252; --text-primary: #ECEFF4; --text-secondary: #D8DEE9;
+            --accent-primary: #88C0D0; --accent-primary-hover: #8FBCBB; --accent-primary-active: #81A1C1;
+            --accent-secondary: #5E81AC; --accent-secondary-hover: #4C566A; --accent-secondary-active: #434C5E;
+            --text-on-accent-primary: #2E3440; --text-on-accent-secondary: #ECEFF4;
+            --border-primary: #4C566A; --focus-ring-color: rgba(143, 188, 187, 0.5);
+            --time-display-bg: rgba(76, 86, 106, 0.3); --tab-inactive-border: transparent;
+            --tab-hover-border: #5E81AC; --tab-active-border: var(--text-primary);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #191919; /* Fixed background color */
-            color: var(--text-primary);
-            height: 100vh;
-            overflow: hidden;
+            font-family: 'Inter', sans-serif; background-color: #191919; color: var(--text-primary);
+            height: 100vh; overflow: hidden;
         }
-        .font-roboto-mono {
-            font-family: 'Roboto Mono', monospace;
-        }
-        .timer-container {
-            background-color: var(--bg-container);
-            transition: background-color 0.3s ease;
-        }
+        .font-roboto-mono { font-family: 'Roboto Mono', monospace; }
+        .timer-container { background-color: var(--bg-container); transition: background-color 0.3s ease; }
         .time-display {
-            color: var(--text-primary);
-            background-color: var(--time-display-bg);
+            color: var(--text-primary); background-color: var(--time-display-bg);
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* Buttons Styling */
         .btn {
             font-weight: 600; padding-top: 0.75rem; padding-bottom: 0.75rem;
-            padding-left: 1rem; padding-right: 1rem; border-radius: 0.5rem;
-            font-size: 1.125rem;
+            padding-left: 1rem; padding-right: 1rem; border-radius: 0.5rem; font-size: 1.125rem;
             transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out, border-color 0.15s ease-in-out;
         }
-        @media (min-width: 640px) { /* sm: */
-            .btn { padding-top: 1rem; padding-bottom: 1rem; font-size: 1.25rem; }
-        }
+        @media (min-width: 640px) { .btn { padding-top: 1rem; padding-bottom: 1rem; font-size: 1.25rem; } }
         .btn:focus { outline: none; box-shadow: 0 0 0 3px var(--focus-ring-color); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
         .btn-primary { background-color: var(--accent-primary); color: var(--text-on-accent-primary); }
         .btn-primary:hover:not(:disabled) { background-color: var(--accent-primary-hover); }
         .btn-primary:active:not(:disabled) { background-color: var(--accent-primary-active); }
-
         .btn-secondary { background-color: var(--accent-secondary); color: var(--text-on-accent-secondary); }
         .btn-secondary:hover:not(:disabled) { background-color: var(--accent-secondary-hover); }
         .btn-secondary:active:not(:disabled) { background-color: var(--accent-secondary-active); }
-        
         .btn-outline {
             background-color: transparent; border: 2px solid var(--border-primary); color: var(--text-secondary);
         }
@@ -91,53 +66,82 @@
         .tab-button.active { color: var(--text-primary); border-color: var(--tab-active-border); font-weight: 600; }
         .tab-button:focus { outline: none; }
 
-        /* Theme Switcher Circles */
-        .theme-switcher {
+        /* Collapsible Theme Switcher */
+        .theme-switcher-wrapper {
+            position: relative; /* For positioning the popup */
             display: flex;
-            justify-content: flex-end;
-            gap: 0.65rem; /* Space between circles */
+            justify-content: flex-end; /* Aligns the active circle to the right */
         }
-        .theme-circle {
-            width: 22px; 
-            height: 22px;
+        .theme-active-circle, .theme-circle { /* Shared styles for all circles */
+            width: 24px; 
+            height: 24px;
             border-radius: 50%;
-            border: 2px solid transparent; /* For active state and focus visibility */
+            border: 2px solid transparent;
             cursor: pointer;
-            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-            padding: 0; /* Remove default button padding */
-            appearance: none; /* Removes default browser styling for buttons */
-            -webkit-appearance: none;
-            -moz-appearance: none;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            padding: 0;
+            appearance: none; -webkit-appearance: none; -moz-appearance: none;
             font-size: 0; /* Hide any accidental text/whitespace */
+            display: block; /* Ensure it behaves as a block for sizing */
         }
-        .theme-circle:focus-visible { /* More specific focus for keyboard users */
+        .theme-active-circle:focus-visible, .theme-circle:focus-visible {
             outline: none;
-            border-color: var(--focus-ring-color); /* Use a theme-aware focus color for the border */
-            box-shadow: 0 0 0 2px var(--focus-ring-color); /* Optional: additional outer ring */
+            border-color: var(--focus-ring-color);
+            box-shadow: 0 0 0 2px var(--focus-ring-color);
         }
-        .theme-circle:hover {
+        .theme-active-circle:hover, .theme-circle:hover {
             transform: scale(1.15);
         }
-        .theme-circle.active-theme {
-            border-color: var(--text-primary); /* Highlight active theme with a contrasting border */
-            transform: scale(1.1); 
+        .theme-active-circle {
+            /* Its background-color is set by JS */
+            border: 2px solid var(--border-primary); /* A subtle border for the active one */
         }
+        .theme-options-popup {
+            position: absolute;
+            top: 100%; /* Position below the active circle */
+            right: 0; /* Align to the right of the wrapper */
+            margin-top: 8px; /* Spacing from the active circle */
+            background-color: var(--bg-container);
+            border-radius: 8px;
+            padding: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column; /* Stack options vertically */
+            gap: 8px; /* Space between option circles */
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+        }
+        .theme-switcher-wrapper.expanded .theme-options-popup {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        /* Individual theme circle colors (for options in popup) */
+        .theme-circle[data-theme="nordicNight"] { background-color: #88C0D0; }
+        .theme-circle[data-theme="zenithWhite"] { background-color: #3B82F6; }
+        .theme-circle[data-theme="crimsonDusk"] { background-color: #E53E3E; }
 
-        /* Specific theme preview colors for the circles themselves */
-        .theme-circle[data-theme="nordicNight"] { background-color: #88C0D0; } /* Light Blue from Nordic */
-        .theme-circle[data-theme="zenithWhite"] { background-color: #3B82F6; } /* Blue from Zenith */
-        .theme-circle[data-theme="crimsonDusk"] { background-color: #E53E3E; } /* Red from Crimson */
+        /* Highlight selected option within the popup if needed, though active-theme on main circle is primary indicator */
+        .theme-options-popup .theme-circle.current-popup-selection {
+             border-color: var(--text-primary); /* Or a different highlight */
+        }
 
     </style>
 </head>
 <body class="flex flex-col items-center justify-center p-4 antialiased">
 
     <div class="timer-container p-6 sm:p-10 rounded-xl shadow-2xl w-full max-w-2xl">
-        <!-- Theme Switcher -->
-        <div class="theme-switcher mb-4">
-            <button class="theme-circle" data-theme="nordicNight" aria-label="Nordic Night Theme"></button>
-            <button class="theme-circle" data-theme="zenithWhite" aria-label="Zenith White Theme"></button>
-            <button class="theme-circle" data-theme="crimsonDusk" aria-label="Crimson Dusk Theme"></button>
+        <!-- Collapsible Theme Switcher -->
+        <div class="theme-switcher-wrapper mb-4">
+            <button class="theme-active-circle" aria-haspopup="true" aria-expanded="false" aria-label="Change theme"></button>
+            <div class="theme-options-popup">
+                <button class="theme-circle" data-theme="nordicNight" aria-label="Nordic Night Theme"></button>
+                <button class="theme-circle" data-theme="zenithWhite" aria-label="Zenith White Theme"></button>
+                <button class="theme-circle" data-theme="crimsonDusk" aria-label="Crimson Dusk Theme"></button>
+            </div>
         </div>
 
         <!-- Tabs -->
@@ -148,20 +152,15 @@
 
         <!-- Timer Content Panes (HTML structure unchanged) -->
         <div id="workTimerContent" class="timer-content">
-            <div id="workTimeDisplay" class="time-display text-6xl sm:text-8xl font-roboto-mono mb-10 sm:mb-12 text-center py-4 rounded-lg">
-                00:00:00
-            </div>
+            <div id="workTimeDisplay" class="time-display text-6xl sm:text-8xl font-roboto-mono mb-10 sm:mb-12 text-center py-4 rounded-lg">00:00:00</div>
             <div class="flex flex-col sm:flex-row justify-around space-y-4 sm:space-y-0 sm:space-x-4">
                 <button id="workStartButton" class="btn btn-primary w-full sm:w-1/3">Start</button>
                 <button id="workStopButton" class="btn btn-secondary w-full sm:w-1/3" disabled>Stop</button>
                 <button id="workResetButton" class="btn btn-outline w-full sm:w-1/3">Reset</button>
             </div>
         </div>
-
         <div id="breakTimerContent" class="timer-content" style="display: none;">
-            <div id="breakTimeDisplay" class="time-display text-6xl sm:text-8xl font-roboto-mono mb-10 sm:mb-12 text-center py-4 rounded-lg">
-                00:00:00
-            </div>
+            <div id="breakTimeDisplay" class="time-display text-6xl sm:text-8xl font-roboto-mono mb-10 sm:mb-12 text-center py-4 rounded-lg">00:00:00</div>
             <div class="flex flex-col sm:flex-row justify-around space-y-4 sm:space-y-0 sm:space-x-4">
                 <button id="breakStartButton" class="btn btn-primary w-full sm:w-1/3">Start</button>
                 <button id="breakStopButton" class="btn btn-secondary w-full sm:w-1/3" disabled>Stop</button>
@@ -180,6 +179,7 @@
                 '--border-primary': '#4C566A', '--focus-ring-color': 'rgba(143, 188, 187, 0.5)',
                 '--time-display-bg': 'rgba(76, 86, 106, 0.3)', '--tab-inactive-border': 'transparent',
                 '--tab-hover-border': '#5E81AC', '--tab-active-border': '#ECEFF4',
+                representativeColor: '#88C0D0', name: 'Nordic Night'
             },
             zenithWhite: {
                 '--bg-container': '#FFFFFF', '--text-primary': '#1F2937', '--text-secondary': '#4B5563',
@@ -189,6 +189,7 @@
                 '--border-primary': '#D1D5DB', '--focus-ring-color': 'rgba(59, 130, 246, 0.4)',
                 '--time-display-bg': 'rgba(229, 231, 235, 0.5)', '--tab-inactive-border': 'transparent',
                 '--tab-hover-border': '#9CA3AF', '--tab-active-border': '#1F2937',
+                representativeColor: '#3B82F6', name: 'Zenith White'
             },
             crimsonDusk: {
                 '--bg-container': '#2C2C2C', '--text-primary': '#E0E0E0', '--text-secondary': '#B0B0B0',
@@ -198,182 +199,83 @@
                 '--border-primary': '#4A5568', '--focus-ring-color': 'rgba(229, 62, 62, 0.5)',
                 '--time-display-bg': 'rgba(74, 85, 104, 0.2)', '--tab-inactive-border': 'transparent',
                 '--tab-hover-border': '#718096', '--tab-active-border': '#E0E0E0',
+                representativeColor: '#E53E3E', name: 'Crimson Dusk'
             }
         };
 
         const LS_SELECTED_THEME = 'timerSelectedTheme';
-        // The selector for themeSwitcherButtons remains the same as it targets elements inside .theme-switcher
-        const themeSwitcherButtons = document.querySelectorAll('.theme-switcher button.theme-circle');
+        const themeSwitcherWrapper = document.querySelector('.theme-switcher-wrapper');
+        const activeThemeCircle = document.querySelector('.theme-active-circle');
+        const themeOptionsPopup = document.querySelector('.theme-options-popup');
+        const themeOptionButtons = document.querySelectorAll('.theme-options-popup .theme-circle');
+        let isThemeOptionsExpanded = false;
 
         function applyTheme(themeName) {
             const selectedTheme = themes[themeName];
             if (!selectedTheme) return;
 
             for (const [property, value] of Object.entries(selectedTheme)) {
-                document.documentElement.style.setProperty(property, value);
+                if (property !== 'representativeColor' && property !== 'name') { // Don't set these as CSS vars
+                    document.documentElement.style.setProperty(property, value);
+                }
             }
+            activeThemeCircle.style.backgroundColor = selectedTheme.representativeColor;
+            activeThemeCircle.setAttribute('aria-label', `Current theme: ${selectedTheme.name}. Click to change theme.`);
             localStorage.setItem(LS_SELECTED_THEME, themeName);
 
-            themeSwitcherButtons.forEach(btn => {
-                btn.classList.toggle('active-theme', btn.dataset.theme === themeName);
+            // Optionally highlight the selected theme within the popup
+            themeOptionButtons.forEach(btn => {
+                btn.classList.toggle('current-popup-selection', btn.dataset.theme === themeName);
             });
         }
 
-        themeSwitcherButtons.forEach(button => {
-            button.addEventListener('click', () => {
+        function toggleThemeOptions() {
+            isThemeOptionsExpanded = !isThemeOptionsExpanded;
+            themeSwitcherWrapper.classList.toggle('expanded', isThemeOptionsExpanded);
+            activeThemeCircle.setAttribute('aria-expanded', isThemeOptionsExpanded.toString());
+        }
+
+        activeThemeCircle.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent click from immediately closing due to document listener
+            toggleThemeOptions();
+        });
+
+        themeOptionButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.stopPropagation();
                 applyTheme(button.dataset.theme);
+                if (isThemeOptionsExpanded) {
+                    toggleThemeOptions(); // Close popup after selection
+                }
             });
+        });
+
+        // Close popup if clicked outside
+        document.addEventListener('click', (event) => {
+            if (isThemeOptionsExpanded && !themeSwitcherWrapper.contains(event.target)) {
+                toggleThemeOptions();
+            }
         });
         
-        // --- Timer Logic (unchanged from previous version) ---
+        // --- Timer Logic (unchanged) ---
         let timers = {
-            work: {
-                startTime: undefined, tInterval: undefined, savedTime: 0, running: false,
-                displayElement: document.getElementById('workTimeDisplay'),
-                startButtonElement: document.getElementById('workStartButton'),
-                stopButtonElement: document.getElementById('workStopButton'),
-                resetButtonElement: document.getElementById('workResetButton'),
-                contentElement: document.getElementById('workTimerContent'),
-                tabButtonElement: document.getElementById('workTabButton'),
-                lsKeys: { savedTime: 'workTimerSavedTime', startTime: 'workTimerStartTime', running: 'workTimerRunning' }
-            },
-            break: {
-                startTime: undefined, tInterval: undefined, savedTime: 0, running: false,
-                displayElement: document.getElementById('breakTimeDisplay'),
-                startButtonElement: document.getElementById('breakStartButton'),
-                stopButtonElement: document.getElementById('breakStopButton'),
-                resetButtonElement: document.getElementById('breakResetButton'),
-                contentElement: document.getElementById('breakTimerContent'),
-                tabButtonElement: document.getElementById('breakTabButton'),
-                lsKeys: { savedTime: 'breakTimerSavedTime', startTime: 'breakTimerStartTime', running: 'breakTimerRunning' }
-            }
+            work: { startTime: undefined, tInterval: undefined, savedTime: 0, running: false, displayElement: document.getElementById('workTimeDisplay'), startButtonElement: document.getElementById('workStartButton'), stopButtonElement: document.getElementById('workStopButton'), resetButtonElement: document.getElementById('workResetButton'), contentElement: document.getElementById('workTimerContent'), tabButtonElement: document.getElementById('workTabButton'), lsKeys: { savedTime: 'workTimerSavedTime', startTime: 'workTimerStartTime', running: 'workTimerRunning' }},
+            break: { startTime: undefined, tInterval: undefined, savedTime: 0, running: false, displayElement: document.getElementById('breakTimeDisplay'), startButtonElement: document.getElementById('breakStartButton'), stopButtonElement: document.getElementById('breakStopButton'), resetButtonElement: document.getElementById('breakResetButton'), contentElement: document.getElementById('breakTimerContent'), tabButtonElement: document.getElementById('breakTabButton'), lsKeys: { savedTime: 'breakTimerSavedTime', startTime: 'breakTimerStartTime', running: 'breakTimerRunning' }}
         };
-        let activeTimerId = 'work';
-        const LS_ACTIVE_TAB = 'timerActiveTab';
-
-        function switchTab(tabId) {
-            if (!timers[tabId]) return;
-            activeTimerId = tabId;
-            localStorage.setItem(LS_ACTIVE_TAB, tabId);
-            for (const id in timers) {
-                const timer = timers[id];
-                timer.contentElement.style.display = (id === tabId) ? 'block' : 'none';
-                timer.tabButtonElement.classList.toggle('active', id === tabId);
-                updateDisplay(id);
-            }
-        }
-
+        let activeTimerId = 'work'; const LS_ACTIVE_TAB = 'timerActiveTab';
+        function switchTab(tabId) { if (!timers[tabId]) return; activeTimerId = tabId; localStorage.setItem(LS_ACTIVE_TAB, tabId); for (const id in timers) { const timer = timers[id]; timer.contentElement.style.display = (id === tabId) ? 'block' : 'none'; timer.tabButtonElement.classList.toggle('active', id === tabId); updateDisplay(id); }}
         window.addEventListener('load', () => {
             const savedTheme = localStorage.getItem(LS_SELECTED_THEME);
-            if (savedTheme && themes[savedTheme]) {
-                applyTheme(savedTheme);
-            } else {
-                applyTheme('nordicNight'); 
-            }
-
-            const storedActiveTab = localStorage.getItem(LS_ACTIVE_TAB);
-            if (storedActiveTab && timers[storedActiveTab]) activeTimerId = storedActiveTab;
-
-            for (const timerId in timers) {
-                const timer = timers[timerId];
-                const storedSavedTime = localStorage.getItem(timer.lsKeys.savedTime);
-                const storedStartTime = localStorage.getItem(timer.lsKeys.startTime);
-                const storedRunning = localStorage.getItem(timer.lsKeys.running);
-
-                if (storedSavedTime !== null) timer.savedTime = parseInt(storedSavedTime, 10);
-
-                if (storedRunning === 'true' && storedStartTime !== null) {
-                    timer.startTime = parseInt(storedStartTime, 10);
-                    timer.running = true;
-                    if (timer.tInterval) clearInterval(timer.tInterval);
-                    timer.tInterval = setInterval(() => updateDisplay(timerId), 1000);
-                    timer.startButtonElement.disabled = true;
-                    timer.stopButtonElement.disabled = false;
-                    timer.resetButtonElement.disabled = false;
-                } else {
-                    timer.running = false;
-                    timer.startButtonElement.disabled = false;
-                    timer.stopButtonElement.disabled = true;
-                }
-                updateDisplay(timerId);
-            }
-
-            timers.work.tabButtonElement.addEventListener('click', () => switchTab('work'));
-            timers.break.tabButtonElement.addEventListener('click', () => switchTab('break'));
-            switchTab(activeTimerId);
-
-            for (const timerId in timers) {
-                const timer = timers[timerId];
-                timer.startButtonElement.addEventListener('click', () => startTimer(timerId));
-                timer.stopButtonElement.addEventListener('click', () => stopTimer(timerId));
-                timer.resetButtonElement.addEventListener('click', () => resetTimer(timerId));
-            }
+            applyTheme((savedTheme && themes[savedTheme]) ? savedTheme : 'nordicNight');
+            const storedActiveTab = localStorage.getItem(LS_ACTIVE_TAB); if (storedActiveTab && timers[storedActiveTab]) activeTimerId = storedActiveTab;
+            for (const timerId in timers) { const timer = timers[timerId]; const storedSavedTime = localStorage.getItem(timer.lsKeys.savedTime); const storedStartTime = localStorage.getItem(timer.lsKeys.startTime); const storedRunning = localStorage.getItem(timer.lsKeys.running); if (storedSavedTime !== null) timer.savedTime = parseInt(storedSavedTime, 10); if (storedRunning === 'true' && storedStartTime !== null) { timer.startTime = parseInt(storedStartTime, 10); timer.running = true; if (timer.tInterval) clearInterval(timer.tInterval); timer.tInterval = setInterval(() => updateDisplay(timerId), 1000); timer.startButtonElement.disabled = true; timer.stopButtonElement.disabled = false; timer.resetButtonElement.disabled = false; } else { timer.running = false; timer.startButtonElement.disabled = false; timer.stopButtonElement.disabled = true; } updateDisplay(timerId); }
+            timers.work.tabButtonElement.addEventListener('click', () => switchTab('work')); timers.break.tabButtonElement.addEventListener('click', () => switchTab('break')); switchTab(activeTimerId);
+            for (const timerId in timers) { const timer = timers[timerId]; timer.startButtonElement.addEventListener('click', () => startTimer(timerId)); timer.stopButtonElement.addEventListener('click', () => stopTimer(timerId)); timer.resetButtonElement.addEventListener('click', () => resetTimer(timerId)); }
         });
-
-        function startTimer(timerIdToStart) {
-            const timerToStart = timers[timerIdToStart];
-            const otherTimerId = timerIdToStart === 'work' ? 'break' : 'work';
-            const otherTimer = timers[otherTimerId];
-
-            if (otherTimer.running) stopTimer(otherTimerId);
-
-            if (!timerToStart.running) {
-                timerToStart.startTime = new Date().getTime();
-                localStorage.setItem(timerToStart.lsKeys.startTime, timerToStart.startTime);
-                localStorage.setItem(timerToStart.lsKeys.savedTime, timerToStart.savedTime);
-                localStorage.setItem(timerToStart.lsKeys.running, 'true');
-                if (timerToStart.tInterval) clearInterval(timerToStart.tInterval);
-                timerToStart.tInterval = setInterval(() => updateDisplay(timerIdToStart), 1000); 
-                timerToStart.running = true;
-                timerToStart.startButtonElement.disabled = true;
-                timerToStart.stopButtonElement.disabled = false;
-                timerToStart.resetButtonElement.disabled = false; 
-            }
-        }
-
-        function stopTimer(timerId) {
-            const timer = timers[timerId];
-            if (timer.running) {
-                clearInterval(timer.tInterval);
-                timer.tInterval = null;
-                timer.savedTime += (new Date().getTime() - timer.startTime);
-                timer.running = false;
-                localStorage.setItem(timer.lsKeys.savedTime, timer.savedTime);
-                localStorage.setItem(timer.lsKeys.running, 'false');
-                localStorage.removeItem(timer.lsKeys.startTime);
-                timer.startButtonElement.disabled = false;
-                timer.stopButtonElement.disabled = true;
-                updateDisplay(timerId);
-            }
-        }
-
-        function resetTimer(timerId) {
-            const timer = timers[timerId];
-            clearInterval(timer.tInterval);
-            timer.tInterval = null; 
-            timer.savedTime = 0;            
-            timer.running = false;          
-            timer.startTime = undefined;
-            localStorage.removeItem(timer.lsKeys.savedTime);
-            localStorage.removeItem(timer.lsKeys.startTime);
-            localStorage.removeItem(timer.lsKeys.running);
-            timer.startButtonElement.disabled = false;
-            timer.stopButtonElement.disabled = true; 
-            updateDisplay(timerId);
-        }
-
-        function updateDisplay(timerId) {
-            const timer = timers[timerId];
-            if (!timer || !timer.displayElement) return;
-            let difference = timer.running ? (new Date().getTime() - timer.startTime) + timer.savedTime : timer.savedTime;
-            let hours = Math.floor((difference / (3600000)) % 24);
-            let minutes = Math.floor((difference / 60000) % 60);
-            let seconds = Math.floor((difference / 1000) % 60);
-            hours = (hours < 10) ? "0" + hours : hours;
-            minutes = (minutes < 10) ? "0" + minutes : minutes;
-            seconds = (seconds < 10) ? "0" + seconds : seconds;
-            timer.displayElement.innerHTML = `${hours}:${minutes}:${seconds}`;
-        }
+        function startTimer(timerIdToStart) { const timerToStart = timers[timerIdToStart]; const otherTimerId = timerIdToStart === 'work' ? 'break' : 'work'; const otherTimer = timers[otherTimerId]; if (otherTimer.running) stopTimer(otherTimerId); if (!timerToStart.running) { timerToStart.startTime = new Date().getTime(); localStorage.setItem(timerToStart.lsKeys.startTime, timerToStart.startTime); localStorage.setItem(timerToStart.lsKeys.savedTime, timerToStart.savedTime); localStorage.setItem(timerToStart.lsKeys.running, 'true'); if (timerToStart.tInterval) clearInterval(timerToStart.tInterval); timerToStart.tInterval = setInterval(() => updateDisplay(timerIdToStart), 1000);  timerToStart.running = true; timerToStart.startButtonElement.disabled = true; timerToStart.stopButtonElement.disabled = false; timerToStart.resetButtonElement.disabled = false; }}
+        function stopTimer(timerId) { const timer = timers[timerId]; if (timer.running) { clearInterval(timer.tInterval); timer.tInterval = null; timer.savedTime += (new Date().getTime() - timer.startTime); timer.running = false; localStorage.setItem(timer.lsKeys.savedTime, timer.savedTime); localStorage.setItem(timer.lsKeys.running, 'false'); localStorage.removeItem(timer.lsKeys.startTime); timer.startButtonElement.disabled = false; timer.stopButtonElement.disabled = true; updateDisplay(timerId); }}
+        function resetTimer(timerId) { const timer = timers[timerId]; clearInterval(timer.tInterval); timer.tInterval = null;  timer.savedTime = 0; timer.running = false; timer.startTime = undefined; localStorage.removeItem(timer.lsKeys.savedTime); localStorage.removeItem(timer.lsKeys.startTime); localStorage.removeItem(timer.lsKeys.running); timer.startButtonElement.disabled = false; timer.stopButtonElement.disabled = true;  updateDisplay(timerId); }
+        function updateDisplay(timerId) { const timer = timers[timerId]; if (!timer || !timer.displayElement) return; let difference = timer.running ? (new Date().getTime() - timer.startTime) + timer.savedTime : timer.savedTime; let h = Math.floor((difference / (3600000)) % 24); let m = Math.floor((difference / 60000) % 60); let s = Math.floor((difference / 1000) % 60); timer.displayElement.innerHTML = `${h<10?"0"+h:h}:${m<10?"0"+m:m}:${s<10?"0"+s:s}`; }
     </script>
 </body>
 </html>
