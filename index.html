@@ -191,16 +191,13 @@
         function startTimer(timerIdToStart) {
             const timerToStart = timers[timerIdToStart];
 
-            // Determine the other timer ID
             const otherTimerId = timerIdToStart === 'work' ? 'break' : 'work';
             const otherTimer = timers[otherTimerId];
 
-            // If the other timer is running, stop it first
             if (otherTimer.running) {
-                stopTimer(otherTimerId); // This will update its state, UI, and localStorage
+                stopTimer(otherTimerId);
             }
 
-            // Now proceed to start the requested timer
             if (!timerToStart.running) {
                 timerToStart.startTime = new Date().getTime();
                 
@@ -246,11 +243,9 @@
             const timer = timers[timerId];
             clearInterval(timer.tInterval);
             timer.tInterval = null; 
-            timer.savedTime = 0;            ar
+            timer.savedTime = 0;            
             timer.running = false;          
             timer.startTime = undefined;
-
-            timer.displayElement.innerHTML = "00:00:00"; 
 
             localStorage.removeItem(timer.lsKeys.savedTime);
             localStorage.removeItem(timer.lsKeys.startTime);
@@ -258,6 +253,8 @@
 
             timer.startButtonElement.disabled = false;
             timer.stopButtonElement.disabled = true; 
+
+            updateDisplay(timerId); // Update display after resetting state
         }
 
         /**
